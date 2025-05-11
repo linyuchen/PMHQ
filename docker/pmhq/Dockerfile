@@ -1,0 +1,62 @@
+FROM ubuntu:24.04
+
+RUN sed -i "s@http://archive.ubuntu.com@http://mirrors.aliyun.com@g; s@http://security.ubuntu.com@http://mirrors.aliyun.com@g" /etc/apt/sources.list.d/ubuntu.sources
+
+# 安装核心依赖（包含 GUI 基础库）
+RUN apt-get update && apt-get install -y \
+    xvfb \
+    x11vnc \
+    x11-utils \
+    websockify \
+    wget \
+    unzip \
+    libgtk-3-0 \
+    libxcb-xinerama0 \
+    libgl1-mesa-dri \
+    libnotify4 \
+    libnss3 \
+    xdg-utils \
+    libsecret-1-0 \
+    libappindicator3-1 \
+    libgbm1 \
+    libasound2t64 \
+    fonts-noto-cjk \
+    && rm -rf /var/lib/apt/lists/*
+
+# 安装 noVNC
+RUN wget https://gh-proxy.com/https://github.com/novnc/noVNC/archive/refs/tags/v1.6.0.zip \
+    && unzip v1.6.0.zip \
+    && rm v1.6.0.zip \
+    && mv noVNC-1.6.0 /opt/novnc \
+    && ln -s /opt/novnc/utils/novnc_proxy /usr/local/bin/novnc
+
+# 下载并安装 QQ Linux 版
+RUN wget https://dldir1.qq.com/qqfile/qq/QQNT/a7f1c5a0/linuxqq_3.2.17-34606_amd64.deb -O qq.deb \
+    && apt-get install -f -y ./qq.deb \
+    && rm qq.deb
+
+# 设置 VNC 密码
+# 从环境变量获取密码，默认值为 pmhq
+ARG VNC_PASSWORD=pmhq
+ENV VNC_PASSWORD=$VNC_PASSWORD
+RUN mkdir -p ~/.vnc && x11vnc -storepasswd "$VNC_PASSWORD" ~/.vnc/passwd
+
+# 启动脚本（启动 QQ 和 noVNC）
+COPY /docker/pmhq/startup.sh /startup.sh
+RUN chmod +x /startup.sh
+RUN wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-x64 -O /opt/pmhq
+#COPY /dist/pmhq-linux-x64 /opt/pmhq
+RUN chmod +x /opt/pmhq
+RUN cat <<EOF > /opt/pmhq_config.json
+{
+    "default_host": "0.0.0.0",
+    "default_port": 13000,
+    "servers": [],
+    "qq_path": ""
+}
+EOF
+# 暴露端口
+EXPOSE 6080 5900 13000
+
+# 启动服务
+ENTRYPOINT ["/startup.sh"]
