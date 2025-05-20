@@ -1,1 +1,1 @@
-docker build -t lagrange.onebot.pmhq -f docker/lagrange-onebot-pmhq/Dockerfile .
+docker build -t linyuchen/lagrange.onebot.pmhq:latest -f docker/lagrange-onebot-pmhq/Dockerfile .

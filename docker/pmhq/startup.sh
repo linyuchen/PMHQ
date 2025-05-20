@@ -1,7 +1,6 @@
 #!/bin/sh
 # If any command fails, the script will exit immediately
 set -e
-
 echo "$(date): Startup script initiated."
 
 # Set DISPLAY globally for the script
@@ -69,7 +68,10 @@ X11VNC_PID=$!
 echo "$(date): x11vnc started with PID $X11VNC_PID"
 
 echo "$(date): Starting pmhq (QQ)..."
-dbus-run-session sh -c "exec env DISPLAY='$DISPLAY' LIBGL_ALWAYS_SOFTWARE='$LIBGL_ALWAYS_SOFTWARE' /opt/pmhq" &
+#/opt/pmhq
+#grep CONFIG_HAVE_ARCH_TRACEHOOK /boot/config-$(uname -r)
+dbus-run-session sh -c "exec env DISPLAY='$DISPLAY' LIBGL_ALWAYS_SOFTWARE='$LIBGL_ALWAYS_SOFTWARE' /opt/QQ/qq --no-sandbox" &
+#dbus-run-session sh -c "exec env DISPLAY='$DISPLAY' LIBGL_ALWAYS_SOFTWARE='$LIBGL_ALWAYS_SOFTWARE' /opt/pmhq" &
 PMHQ_LAUNCHER_PID=$!
 echo "$(date): pmhq (QQ) launched via dbus-run-session (PID $PMHQ_LAUNCHER_PID) with DISPLAY=$DISPLAY."
 

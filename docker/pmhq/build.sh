@@ -1,1 +1,1 @@
-docker build -t pmhq -f docker/pmhq/Dockerfile .
+docker build -t linyuchen/pmhq:latest -f docker/pmhq/Dockerfile .
