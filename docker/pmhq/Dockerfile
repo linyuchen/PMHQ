@@ -1,5 +1,7 @@
 FROM docker.m.daocloud.io/library/ubuntu:24.04
+
 ARG TARGETARCH
+
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
         sed -i "s@http://ports.ubuntu.com/ubuntu-ports@http://mirrors.aliyun.com/ubuntu-ports@g" /etc/apt/sources.list.d/ubuntu.sources; \
     else \
@@ -51,14 +53,14 @@ COPY /docker/pmhq/startup.sh /startup.sh
 RUN chmod +x /startup.sh
 
 
-#RUN if [ "$TARGETARCH" = "arm64" ]; then \
-#        wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-arm64 -O /opt/pmhq; \
-#    else \
-#        wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-x64 -O /opt/pmhq; \
-#    fi
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-arm64 -O /opt/pmhq; \
+    else \
+        wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-x64 -O /opt/pmhq; \
+    fi
 
 #COPY /dist/pmhq-linux-x64 /opt/pmhq
-COPY /dist/pmhq-linux-arm64 /opt/pmhq
+#COPY /dist/pmhq-linux-arm64 /opt/pmhq
 RUN chmod +x /opt/pmhq
 RUN cat <<EOF > /opt/pmhq_config.json
 {
