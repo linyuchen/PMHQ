@@ -29,4 +29,4 @@ else
     echo "未检测到 ONEBOT_SERVICES，使用默认配置"
 fi
 
-exec /app/Lagrange.OneBot.PMHQ.linux-x64
+exec /app/Lagrange.OneBot.PMHQ

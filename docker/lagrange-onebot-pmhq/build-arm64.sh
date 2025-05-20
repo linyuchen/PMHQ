@@ -1,1 +1,1 @@
-docker build -t linyuchen/lagrange.onebot.pmhq:latest-arm64 -f docker/lagrange-onebot-pmhq/Dockerfile .
+docker build -t linyuchen/lagrange.onebot.pmhq:latest-arm64 -f docker/lagrange-onebot-pmhq/Dockerfile --platform linux/arm64 .

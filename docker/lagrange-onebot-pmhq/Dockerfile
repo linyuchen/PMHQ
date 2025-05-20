@@ -1,4 +1,4 @@
-FROM docker.m.daocloud.io/library/ubuntu:24.04
+FROM ubuntu:24.04
 ARG TARGETARCH
 
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
@@ -23,7 +23,8 @@ RUN \
     wget --show-progress "https://gh-proxy.com/https://github.com/linyuchen/Lagrange.Core.PMHQ/releases/latest/download/Lagrange.OneBot.PMHQ.linux-$arch.zip" \
     && unzip -j Lagrange.OneBot.PMHQ.linux-$arch.zip \
     && rm Lagrange.OneBot.PMHQ.linux-$arch.zip \
-    && chmod +x Lagrange.OneBot.PMHQ.linux-$arch
+    && mv Lagrange.OneBot.PMHQ.linux-$arch Lagrange.OneBot.PMHQ \
+    && chmod +x Lagrange.OneBot.PMHQ
 
 COPY /docker/lagrange-onebot-pmhq/startup.sh /app/startup.sh
 

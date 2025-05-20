@@ -1,4 +1,4 @@
-FROM docker.m.daocloud.io/library/ubuntu:24.04
+FROM ubuntu:24.04
 
 ARG TARGETARCH
 

@@ -137,13 +137,18 @@ while :; do
     esac
 done
 
+docker_mirror=""
+read -p "是否使用docker镜像源(y/n): " use_docker_mirror
+if [[ "$use_docker_mirror" =~ ^[yY]$ ]]; then
+  docker_mirror="docker.1ms.run/"
+fi
 # 生成docker-compose.yml（使用双引号包裹并保留转义）
 cat << EOF > docker-compose.yml
 version: '3.8'
 
 services:
   pmhq:
-    image: linyuchen/pmhq:latest
+    image: ${docker_mirror}linyuchen/pmhq:latest
     container_name: pmhq
     ports:
       - "${NOVNC_PORT}:6080"
@@ -153,7 +158,7 @@ services:
       - app_network
 
   lagrange.onebot.pmhq:
-    image: linyuchen/lagrange.onebot.pmhq:latest
+    image: ${docker_mirror}linyuchen/lagrange.onebot.pmhq:latest
 $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE_PORTS[@]}"; do echo "      - \"${port}:${port}\""; done)
     environment:
       - ONEBOT_SERVICES=$IMPLEMENTATIONS_STR
