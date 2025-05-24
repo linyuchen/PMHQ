@@ -38,7 +38,7 @@ RUN wget https://gh-proxy.com/https://github.com/novnc/noVNC/archive/refs/tags/v
 
 # 下载并安装 QQ Linux 版
 RUN \
-    wget https://dldir1.qq.com/qqfile/qq/QQNT/a7f1c5a0/linuxqq_3.2.17-34606_$TARGETARCH.deb -O qq.deb \
+    wget https://dldir1.qq.com/qqfile/qq/QQNT/69629a30/linuxqq_3.2.17-35341_$TARGETARCH.deb -O qq.deb \
     && apt-get install -f -y ./qq.deb \
     && rm qq.deb
 
@@ -48,16 +48,14 @@ ARG VNC_PASSWORD=pmhq
 ENV VNC_PASSWORD=$VNC_PASSWORD
 RUN mkdir -p ~/.vnc && x11vnc -storepasswd "$VNC_PASSWORD" ~/.vnc/passwd
 
-# 启动脚本（启动 QQ 和 noVNC）
-COPY /docker/pmhq/startup.sh /startup.sh
-RUN chmod +x /startup.sh
-
-
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
-        wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-arm64 -O /opt/pmhq; \
+        arch="arm64"; \
     else \
-        wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-x64 -O /opt/pmhq; \
-    fi
+        arch="x64"; \
+    fi; \
+    wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
+    unzip /opt/pmhq.zip -d /opt/ && \
+    rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
 
 #COPY /dist/pmhq-linux-x64 /opt/pmhq
 #COPY /dist/pmhq-linux-arm64 /opt/pmhq
@@ -70,8 +68,14 @@ RUN cat <<EOF > /opt/pmhq_config.json
     "qq_path": ""
 }
 EOF
+
+
+
 # 暴露端口
 EXPOSE 6080 5900 13000
+
+COPY docker/pmhq/startup.sh /startup.sh
+RUN chmod +x /startup.sh
 
 # 启动服务
 ENTRYPOINT ["/startup.sh"]

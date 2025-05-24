@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# 检查root权限
-if [ "$(id -u)" -ne 0 ]; then
-    echo "请使用 sudo 运行此脚本！"
-    exit 1
-fi
-
-# 安装docker依赖
 if ! command -v docker &> /dev/null; then
   echo "请先安装 Docker！"
   exit 1
@@ -138,10 +131,12 @@ while :; do
 done
 
 docker_mirror=""
-read -p "是否使用docker镜像源(y/n): " use_docker_mirror
-if [[ "$use_docker_mirror" =~ ^[yY]$ ]]; then
-  docker_mirror="docker.1ms.run/"
-fi
+
+#read -p "是否使用docker镜像源(y/n): " use_docker_mirror
+#
+#if [[ "$use_docker_mirror" =~ ^[yY]$ ]]; then
+#  docker_mirror="docker.1ms.run/"
+#fi
 # 生成docker-compose.yml（使用双引号包裹并保留转义）
 cat << EOF > docker-compose.yml
 version: '3.8'
@@ -172,6 +167,12 @@ networks:
     driver: bridge
 EOF
 
+# 检查root权限
+if [ "$(id -u)" -ne 0 ]; then
+    echo "没有 root 权限，请手动运行 sudo docker compose up -d"
+    echo "之后浏览器打开 http://localhost:${NOVNC_PORT}/vnc.html 访问 noVNC 登录QQ即可"
+    exit 1
+fi
 docker compose up -d
 
 echo "浏览器打开 http://localhost:${NOVNC_PORT}/vnc.html 访问 noVNC 登录QQ即可"
