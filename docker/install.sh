@@ -55,7 +55,7 @@ while :; do
     echo "3) 添加HTTP服务"
     echo "4) 添加HTTP上报"
     echo "0) 完成配置"
-    read -rp "输入选项 (0-4): " choice
+    read "输入选项 (0-4): " choice
 
     case $choice in
         0)
