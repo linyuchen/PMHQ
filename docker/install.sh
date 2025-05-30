@@ -56,7 +56,7 @@ while :; do
     echo "4) 添加HTTP上报"
     echo "0) 完成配置"
     printf "输入选项 (0-4): " 
-    read choice
+    read choice # 改用不带参数的 read 兼容dash
 
     case $choice in
         0)
