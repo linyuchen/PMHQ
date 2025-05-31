@@ -2,7 +2,7 @@
 
 此方案是稳定不掉线的一个方案
 
-首先确认自己用的是原版 QQ，不要安装任何插件，比如安装 LiteloaderQQNT，否则依然有掉线风险*
+首先确认自己用的是原版 QQ，不要安装任何插件，比如安装 LiteloaderQQNT，否则依然有掉线风险
 
 0. 下载 [PMHQ](https://github.com/linyuchen/PMHQ/releases) 和 [Lagrange.OneBot.PMHQ](https://github.com/linyuchen/Lagrange.Core.PMHQ/releases)
 
