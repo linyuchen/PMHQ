@@ -16,7 +16,7 @@ Pure memory hook QQNT
 
 Linux 使用 Docker 一键脚本部署 PMHQ 和 Lagrange.OneBot.PMHQ
 ```shell
-curl -fsSL https://raw.githubusercontent.com/linyuchen/PMHQ/refs/heads/main/docker/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/linyuchen/PMHQ/refs/heads/main/docker/install-lgr.sh | sh
 ```
 
 ## 配置
