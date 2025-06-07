@@ -65,5 +65,3 @@ HTTP 上报
   "Secret": ""
 }
 ```
-
-*Lagrange 的其他设置参考 [Lagrange](https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/Config/) 官网*
