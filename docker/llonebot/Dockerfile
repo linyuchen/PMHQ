@@ -1,5 +1,5 @@
-FROM node:22.16-alpine
-RUN apk add --no-cache unzip
+FROM node:lts-alpine
+RUN apk add unzip
 
 WORKDIR /app/llonebot
 

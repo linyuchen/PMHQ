@@ -1,1 +1,1 @@
-docker build -t linyuchen/llonebot:latest -f docker/llonebot/Dockerfile .
+docker build -t linyuchen/llonebot.pmhq:latest -f docker/llonebot/Dockerfile .

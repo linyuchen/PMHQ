@@ -1,6 +1,9 @@
 FROM ubuntu:24.04
 ARG TARGETARCH
 
+RUN echo "Acquire::https::Verify-Peer \"false\";" > /etc/apt/apt.conf.d/99ignore-ssl && \
+    echo "Acquire::https::Verify-Host \"false\";" >> /etc/apt/apt.conf.d/99ignore-ssl
+
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
         sed -i "s@http://ports.ubuntu.com/ubuntu-ports@http://mirrors.aliyun.com/ubuntu-ports@g" /etc/apt/sources.list.d/ubuntu.sources; \
     else \

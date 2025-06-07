@@ -2,6 +2,9 @@ FROM ubuntu:24.04
 
 ARG TARGETARCH
 
+RUN echo "Acquire::https::Verify-Peer \"false\";" > /etc/apt/apt.conf.d/99ignore-ssl && \
+    echo "Acquire::https::Verify-Host \"false\";" >> /etc/apt/apt.conf.d/99ignore-ssl
+
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
         sed -i "s@http://ports.ubuntu.com/ubuntu-ports@http://mirrors.aliyun.com/ubuntu-ports@g" /etc/apt/sources.list.d/ubuntu.sources; \
     else \
@@ -9,6 +12,8 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
     fi
 
 # 安装核心依赖（包含 GUI 基础库）
+
+
 RUN apt-get update && apt-get install -y \
     xvfb \
     x11vnc \
@@ -48,16 +53,16 @@ ARG VNC_PASSWORD=pmhq
 ENV VNC_PASSWORD=$VNC_PASSWORD
 RUN mkdir -p ~/.vnc && x11vnc -storepasswd "$VNC_PASSWORD" ~/.vnc/passwd
 
-RUN if [ "$TARGETARCH" = "arm64" ]; then \
-        arch="arm64"; \
-    else \
-        arch="x64"; \
-    fi; \
-    wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
-    unzip /opt/pmhq.zip -d /opt/ && \
-    rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
+#RUN if [ "$TARGETARCH" = "arm64" ]; then \
+#        arch="arm64"; \
+#    else \
+#        arch="x64"; \
+#    fi; \
+#    wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
+#    unzip /opt/pmhq.zip -d /opt/ && \
+#    rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
 
-#COPY /dist/pmhq-linux-x64 /opt/pmhq
+COPY /dist/pmhq-linux-x64 /opt/pmhq
 #COPY /dist/pmhq-linux-arm64 /opt/pmhq
 RUN chmod +x /opt/pmhq
 RUN cat <<EOF > /opt/pmhq_config.json

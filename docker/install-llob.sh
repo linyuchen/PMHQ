@@ -14,35 +14,42 @@ while [ -z "$VNC_PASSWORD" ]; do
     read -p "VNC 密码（必填）: " VNC_PASSWORD
 done
 
-TOKEN=""
-SECRET=""
-WS_URLS="["
-HTTP_URLS="["
-ENABLE_WS="false"
-ENABLE_HTTP="false"
-WS_PORT="3001"
-HTTP_PORT="3000"
+ONEBOT_TOKEN=""
+ONEBOT_SECRET=""
+ONEBOT_WS_URLS="["
+ONEBOT_HTTP_URLS="["
+ENABLE_ONEBOT_WS="false"
+ENABLE_ONEBOT_HTTP="false"
+ONEBOT_WS_PORT="3001"
+ONEBOT_HTTP_PORT="3000"
+
+ENABLE_SATORI="false"
+SATORI_PORT="5600"
+SATORI_TOKEN=""
+
 declare -A SERVICE_PORTS
 
 # 交互式配置
 while :; do
     clear
     echo "------------------------"
-    echo "请选择 OneBot V11 设置："
-    echo "1) 设置正向WS"
-    echo "2) 添加反向WS"
-    echo "3) 设置HTTP服务"
-    echo "4) 添加HTTP上报"
-    echo "5) 设置token"
-    echo "6) 设置secret"
+    echo "请选择服务设置："
+    echo "1) 设置OneBot 11正向WS"
+    echo "2) 添加OneBot 11反向WS"
+    echo "3) 设置OneBot 11 HTTP服务"
+    echo "4) 添加OneBot 11 HTTP上报"
+    echo "5) 设置OneBot 11 HTTP POST secret"
+    echo "6) 设置OneBot 11 Token"
+    echo "7) 设置Satori端口"
+    echo "8) 设置Satori token"
     echo "0) 完成配置"
     printf "输入选项 (0-6): "
     read choice # 改用不带参数的 read 兼容dash
 
     case $choice in
         0)
-            WS_URLS+="]"
-            HTTP_URLS+="]"
+            ONEBOT_WS_URLS+="]"
+            ONEBOT_HTTP_URLS+="]"
             break ;;
         1|3)
             # 正向WS/HTTP服务
@@ -54,46 +61,60 @@ while :; do
                 break
             done
 
-            if [ choice -eq 1 ]; then
-                if [ HTTP_PORT == "$port" ]; then
+            if [ "$choice" == "1" ]; then
+                if [ "$ONEBOT_HTTP_PORT" == "$port" ]; then
                     echo "错误：WS端口不能与HTTP端口相同！"
                     continue
                 fi
-                WS_PORT="$port"
+                ONEBOT_WS_PORT="$port"
             else
-                if [ WS_PORT == "$port" ]; then
+                if [ "$ONEBOT_WS_PORT" == "$port" ]; then
                     echo "错误：HTTP端口不能与WS端口相同！"
                     continue
                 fi
-                HTTP_PORT="$port"
+                ONEBOT_HTTP_PORT="$port"
             fi
             SERVICE_PORTS["$port"]=1
             ;;
         2|4)
             # 反向服务
-            if [ choice -eq 2 ]; then
+            if [ "$choice" == "2" ]; then
               read -p "Url 如 ws://host.docker.internal:8080/onebot/v11/ws）: " url
-              if [ WS_URLS == "[" ]; then
+              url=${url////\/}
+              if [ "$ONEBOT_WS_URLS" == "[" ]; then
                 url="\"$url\""
               else
                 url=",\"$url\""
               fi
-              WS_URLS+="$url"
+              ONEBOT_WS_URLS+="$url"
             else
               read -p "Url 如 http://host.docker.internal:8080/onebot/v11/）: " url
-              if [ WS_URLS == "[" ]; then
+              if [ "$ONEBOT_HTTP_URLS" == "[" ]; then
                 url="\"$url\""
               else
                 url=",\"$url\""
               fi
-              HTTP_URLS+="$url"
+              ONEBOT_HTTP_URLS+="$url"
             fi
             ;;
         5)
-            read -p "Token:" TOKEN
+            read -p "Secret:" ONEBOT_SECRET
             ;;
         6)
-            read -p "Secret:" SECRET
+            read -p "Token:" ONEBOT_TOKEN
+            ;;
+        7)
+            while true; do
+                read -p "Satori port: " port
+                [[ "$port" =~ ^[0-9]+$ ]] || { echo "错误：端口必须是数字！"; continue; }
+                SATORI_PORT=${port}
+                break
+            done
+            SERVICE_PORTS["$SATORI_PORT"]=1
+            ENABLE_SATORI="true"
+            ;;
+        8)
+            read -p "Satori token: " SATORI_TOKEN
             ;;
         *)
             echo "无效选项"
@@ -123,16 +144,22 @@ services:
     networks:
       - app_network
 
-  llonebot:
-    image: ${docker_mirror}linyuchen/llonebot:latest
+  llonebot.pmhq:
+    image: ${docker_mirror}linyuchen/llonebot.pmhq:latest
 $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE_PORTS[@]}"; do echo "      - \"${port}:${port}\""; done)
     environment:
-      - ENABLE_WS=${ENABLE_WS}
-      - ENABLE_HTTP=${ENABLE_HTTP}
-      - WS_PORT=${WS_PORT}
-      - HTTP_PORT=${HTTP_PORT}
-      - WS_URLS=${WS_URLS}
-      - HTTP_URLS=${HTTP_URLS}
+      - ENABLE_ONEBOT_WS=${ENABLE_ONEBOT_WS}
+      - ENABLE_ONEBOT_HTTP=${ENABLE_ONEBOT_HTTP}
+      - ONEBOT_WS_PORT=${ONEBOT_WS_PORT}
+      - ONEBOT_HTTP_PORT=${ONEBOT_HTTP_PORT}
+      - ONEBOT_WS_URLS=${ONEBOT_WS_URLS}
+      - ONEBOT_HTTP_URLS=${ONEBOT_HTTP_URLS}
+      - ONEBOT_TOKEN=${ONEBOT_TOKEN}
+      - ONEBOT_SECRET=${ONEBOT_SECRET}
+      - ENABLE_SATORI=${ENABLE_SATORI}
+      - SATORI_PORT=${SATORI_PORT}
+      - SATORI_TOKEN=${SATORI_TOKEN}
+
     networks:
       - app_network
     depends_on:
