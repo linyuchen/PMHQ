@@ -18,15 +18,17 @@ Pure memory hook QQNT
 
 ## Docker
 
+Linux 使用 Docker 一键脚本部署 PMHQ 和 LLOneBot
+```shell
+curl -fsSL https://raw.githubusercontent.com/linyuchen/PMHQ/refs/heads/main/docker/install-llob.sh -o install-pmhq-llob.sh && ./install-pmhq-llob.sh
+```
+
 Linux 使用 Docker 一键脚本部署 PMHQ 和 Lagrange.OneBot.PMHQ
 ```shell
 curl -fsSL https://raw.githubusercontent.com/linyuchen/PMHQ/refs/heads/main/docker/install-lgr.sh -o install-pmhq-lgr.sh && ./install-pmhq-lgr.sh
 ```
 
-Linux 使用 Docker 一键脚本部署 PMHQ 和 LLOneBot
-```shell
-curl -fsSL https://raw.githubusercontent.com/linyuchen/PMHQ/refs/heads/main/docker/install-llob.sh -o install-pmhq-llob.sh && ./install-pmhq-llob.sh
-```
+
 
 ## 配置
 
