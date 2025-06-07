@@ -2,8 +2,6 @@
 
 Pure memory hook QQNT
 
-不修改 QQ 文件，纯内存 Hook 实现，可用于收发 Protobuf
-
 ## API 对接
 
 * 使用 API 收发 Protobuf 见 [API.md](./doc/api.md)
