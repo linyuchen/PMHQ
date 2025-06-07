@@ -67,12 +67,14 @@ while :; do
                     continue
                 fi
                 ONEBOT_WS_PORT="$port"
+                ENABLE_ONEBOT_WS="true"
             else
                 if [ "$ONEBOT_WS_PORT" == "$port" ]; then
                     echo "错误：HTTP端口不能与WS端口相同！"
                     continue
                 fi
                 ONEBOT_HTTP_PORT="$port"
+                ENABLE_ONEBOT_HTTP="true"
             fi
             SERVICE_PORTS["$port"]=1
             ;;
