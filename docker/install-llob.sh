@@ -144,8 +144,8 @@ services:
     networks:
       - app_network
 
-  llonebot.pmhq:
-    image: ${docker_mirror}linyuchen/llonebot.pmhq:latest
+  llonebot:
+    image: ${docker_mirror}linyuchen/llonebot:latest
 $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE_PORTS[@]}"; do echo "      - \"${port}:${port}\""; done)
     environment:
       - ENABLE_ONEBOT_WS=${ENABLE_ONEBOT_WS}

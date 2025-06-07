@@ -1,4 +1,4 @@
-$version = "1.0.1"
+$version = "1.1.0"
 
 docker build -t linyuchen/pmhq:amd64-$version -f docker/pmhq/Dockerfile .
 docker build -t linyuchen/pmhq:arm64-$version -f docker/pmhq/Dockerfile --platform linux/arm64 .

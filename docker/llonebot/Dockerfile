@@ -1,5 +1,24 @@
 FROM node:lts-alpine
-RUN apk add unzip
+
+RUN set -eux; \
+    # 获取当前系统 Alpine 主要版本 (如 3.19)
+    ALPINE_VERSION=$(grep -oE '[0-9]+\.[0-9]+' /etc/alpine-release); \
+    # 检查版本号是否有效
+    [ -n "$ALPINE_VERSION" ] || { echo "Error: Failed to get Alpine version"; exit 1; }; \
+    # 配置阿里云镜像源
+    echo "https://mirrors.aliyun.com/alpine/v$ALPINE_VERSION/main" > /etc/apk/repositories; \
+    echo "https://mirrors.aliyun.com/alpine/v$ALPINE_VERSION/community" >> /etc/apk/repositories; \
+    # 更新索引
+    apk update; \
+    # 安装时区工具
+    apk add --no-cache tzdata; \
+    # 设置时区为上海
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; \
+    echo "Asia/Shanghai" > /etc/timezone; \
+    # 清理缓存减少镜像体积
+    rm -rf /var/cache/apk/*
+
+RUN apk add unzip wget
 
 WORKDIR /app/llonebot
 
@@ -7,7 +26,9 @@ COPY docker/llonebot/startup.sh /startup.sh
 
 RUN chmod +x /startup.sh
 
-COPY /dist/llonebot.zip /app/llonebot.zip
+RUN wget https://gh-proxy.com/https://github.com/LLOneBot/LLOneBot/releases/latest/download/LLOneBot.zip -O /app/llonebot.zip
+
+#COPY /dist/llonebot.zip /app/llonebot.zip
 
 RUN unzip /app/llonebot.zip -d /app/llonebot \
     && rm /app/llonebot.zip
