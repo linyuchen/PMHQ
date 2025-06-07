@@ -8,13 +8,13 @@ Pure memory hook QQNT
 
 * 使用 API 收发 Protobuf 见 [API.md](./doc/api.md)
 
-## 对接 Lagrange.OneBot.PMHQ 
-
-* 见 [Lagrange.OneBot.PMHQ.md](./doc/Lagrange.OneBot.PMHQ.md)
-
 ## 对接 LLOneBot
 
 * 见 [LLOneBot 官网](https://llonebot.com)
+ 
+## 对接 Lagrange.OneBot.PMHQ 
+
+* 见 [Lagrange.OneBot.PMHQ.md](./doc/Lagrange.OneBot.PMHQ.md)
 
 ## Docker
 
