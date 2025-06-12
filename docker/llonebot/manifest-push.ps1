@@ -1,4 +1,4 @@
-$version = "5.0.0"
+$version = "5.0.2"
 
 docker build -t linyuchen/llonebot:amd64-$version -f docker/llonebot/Dockerfile .
 docker build -t linyuchen/llonebot:arm64-$version -f docker/llonebot/Dockerfile --platform linux/arm64 .
