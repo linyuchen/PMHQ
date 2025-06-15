@@ -126,11 +126,11 @@ done
 
 docker_mirror=""
 
-#read -p "是否使用docker镜像源(y/n): " use_docker_mirror
-#
-#if [[ "$use_docker_mirror" =~ ^[yY]$ ]]; then
-#  docker_mirror="docker.1ms.run/"
-#fi
+read -p "是否使用docker镜像源(y/n): " use_docker_mirror
+
+if [[ "$use_docker_mirror" =~ ^[yY]$ ]]; then
+  docker_mirror="docker.1ms.run/"
+fi
 # 生成docker-compose.yml（使用双引号包裹并保留转义）
 cat << EOF > docker-compose.yml
 version: '3.8'
@@ -145,6 +145,8 @@ services:
       - VNC_PASSWORD=${VNC_PASSWORD}
     networks:
       - app_network
+    volumes:
+      - qq_volume:/root/.config/QQ
 
   llonebot:
     image: ${docker_mirror}linyuchen/llonebot:latest
@@ -164,8 +166,13 @@ $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE
 
     networks:
       - app_network
+    volumes:
+      - qq_volume:/root/.config/QQ
     depends_on:
       - pmhq
+
+volumes:
+  qq_volume:
 
 networks:
   app_network:
