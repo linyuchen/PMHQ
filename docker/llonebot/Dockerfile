@@ -11,7 +11,7 @@ RUN set -eux; \
     # 更新索引
     apk update; \
     # 安装时区工具
-    apk add --no-cache tzdata; \
+    apk add --no-cache tzdata ffmpeg; \
     # 设置时区为上海
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; \
     echo "Asia/Shanghai" > /etc/timezone; \
@@ -26,7 +26,7 @@ COPY docker/llonebot/startup.sh /startup.sh
 
 RUN chmod +x /startup.sh
 
-RUN wget https://gh-proxy.com/https://github.com/LLOneBot/LLOneBot/releases/download/v5.1.0/LLOneBot.zip -O /app/llonebot.zip
+RUN wget https://github.com/LLOneBot/LLOneBot/releases/download/v5.1.0/LLOneBot.zip -O /app/llonebot.zip
 
 #COPY /dist/llonebot.zip /app/llonebot.zip
 

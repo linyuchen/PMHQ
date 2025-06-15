@@ -58,11 +58,11 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
     else \
         arch="x64"; \
     fi; \
-    wget https://gh-proxy.com/https://github.com/linyuchen/PMHQ/releases/latest/download/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
+    wget https://github.com/linyuchen/PMHQ/releases/download/v2.0.1/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
     unzip /opt/pmhq.zip -d /opt/ && \
     rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
 
-# COPY /dist/pmhq-linux-x64 /opt/pmhq
+#COPY /dist/pmhq-linux-x64 /opt/pmhq
 #COPY /dist/pmhq-linux-arm64 /opt/pmhq
 RUN chmod +x /opt/pmhq
 RUN cat <<EOF > /opt/pmhq_config.json

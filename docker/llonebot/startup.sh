@@ -30,6 +30,7 @@ sed -i "/\"satori\": {/,/}/ {
 }" "$FILE"
 
 sed -i "s/\"onlyLocalhost\":\s*true/\"onlyLocalhost\": false/g" "$FILE"
+sed -i "s|\"ffmpeg\":\s*\"\"|\"ffmpeg\": \"/usr/bin/ffmpeg\"|g" "$FILE"
 
 port="13000"
 host="pmhq"
