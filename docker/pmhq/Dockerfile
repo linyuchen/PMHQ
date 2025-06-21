@@ -43,7 +43,7 @@ RUN wget https://gh-proxy.com/https://github.com/novnc/noVNC/archive/refs/tags/v
 
 # 下载并安装 QQ Linux 版
 RUN \
-    wget https://dldir1.qq.com/qqfile/qq/QQNT/69629a30/linuxqq_3.2.17-35341_$TARGETARCH.deb -O qq.deb \
+    wget https://dldir1v6.qq.com/qqfile/qq/QQNT/81e26a27/linuxqq_3.2.18-36497_$TARGETARCH.deb -O qq.deb \
     && apt-get install -f -y ./qq.deb \
     && rm qq.deb
 
@@ -58,7 +58,7 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
     else \
         arch="x64"; \
     fi; \
-    wget https://github.com/linyuchen/PMHQ/releases/download/v2.0.1/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
+    wget https://github.com/linyuchen/PMHQ/releases/download/v2.0.2/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
     unzip /opt/pmhq.zip -d /opt/ && \
     rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
 

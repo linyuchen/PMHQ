@@ -26,7 +26,7 @@ COPY docker/llonebot/startup.sh /startup.sh
 
 RUN chmod +x /startup.sh
 
-RUN wget https://github.com/LLOneBot/LLOneBot/releases/download/v5.1.0/LLOneBot.zip -O /app/llonebot.zip
+RUN wget https://github.com/LLOneBot/LLOneBot/releases/download/v5.2.0/LLOneBot.zip -O /app/llonebot.zip
 
 #COPY /dist/llonebot.zip /app/llonebot.zip
 
