@@ -147,6 +147,9 @@ services:
   llonebot:
     image: ${docker_mirror}linyuchen/llonebot:latest
 $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE_PORTS[@]}"; do echo "      - \"${port}:${port}\""; done)
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - ENABLE_ONEBOT_WS=${ENABLE_ONEBOT_WS}
       - ENABLE_ONEBOT_HTTP=${ENABLE_ONEBOT_HTTP}
