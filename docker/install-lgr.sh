@@ -156,6 +156,8 @@ services:
   lagrange.onebot.pmhq:
     image: ${docker_mirror}linyuchen/lagrange.onebot.pmhq:latest
 $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE_PORTS[@]}"; do echo "      - \"${port}:${port}\""; done)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - ONEBOT_SERVICES=$IMPLEMENTATIONS_STR
     networks:
