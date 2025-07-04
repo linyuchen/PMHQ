@@ -20,6 +20,7 @@
 ```
 
 qq_path:  QQ.exe 的绝对路径
+
 servers: 不同的 QQ 号监听不同的 ws 端口，如果 servers 不填写或者找不到对应的 QQ 号，pmhq 会使用 `default_host` 和 `default_port`
 
 如果你的 pmhq 位于 QQ.exe 的上级目录，pmhq 会自动寻找到 QQ.exe，则不需要填写 `qq_path`
