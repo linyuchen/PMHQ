@@ -1,6 +1,7 @@
 FROM ubuntu:24.04
 
 ARG TARGETARCH
+ARG PMHQ_VERSION
 
 RUN echo "Acquire::https::Verify-Peer \"false\";" > /etc/apt/apt.conf.d/99ignore-ssl && \
     echo "Acquire::https::Verify-Host \"false\";" >> /etc/apt/apt.conf.d/99ignore-ssl
@@ -58,7 +59,7 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
     else \
         arch="x64"; \
     fi; \
-    wget https://github.com/linyuchen/PMHQ/releases/download/v2.0.2/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
+    wget https://github.com/linyuchen/PMHQ/releases/download/v${PMHQ_VERSION}/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
     unzip /opt/pmhq.zip -d /opt/ && \
     rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
 
