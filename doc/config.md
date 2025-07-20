@@ -6,6 +6,8 @@
 
 ```json5
 {
+  "debug": false,
+  "enable_gui": true,
   "default_host": "127.0.0.1",
   "default_port": 13000,
   "qq_path": "D:\\Program Files\\QQNT9.9.19-34958\\QQ.exe",
@@ -18,6 +20,10 @@
   ],
 }
 ```
+
+debug: 是否开启调试模式，开启后会输出 pb，并且 ws 会推送 send 的pb
+
+enable_gui: 是否启用 GUI 界面，仅 Windows 有效
 
 qq_path:  QQ.exe 的绝对路径
 
