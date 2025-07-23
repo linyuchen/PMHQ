@@ -12,10 +12,10 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
         sed -i "s@http://archive.ubuntu.com/ubuntu@http://mirrors.aliyun.com/ubuntu@g; s@http://security.ubuntu.com/ubuntu@http://mirrors.aliyun.com/ubuntu@g" /etc/apt/sources.list.d/ubuntu.sources; \
     fi
 
+
 # 安装核心依赖（包含 GUI 基础库）
-
-
 RUN apt-get update && apt-get install -y \
+    tzdata \
     xvfb \
     x11vnc \
     x11-utils \
@@ -34,6 +34,10 @@ RUN apt-get update && apt-get install -y \
     libasound2t64 \
     fonts-noto-cjk \
     && rm -rf /var/lib/apt/lists/*
+    
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # 安装 noVNC
 RUN wget https://gh-proxy.com/https://github.com/novnc/noVNC/archive/refs/tags/v1.6.0.zip \
@@ -54,16 +58,16 @@ ARG VNC_PASSWORD=pmhq
 ENV VNC_PASSWORD=$VNC_PASSWORD
 RUN mkdir -p ~/.vnc && x11vnc -storepasswd "$VNC_PASSWORD" ~/.vnc/passwd
 
-#RUN if [ "$TARGETARCH" = "arm64" ]; then \
-#        arch="arm64"; \
-#    else \
-#        arch="x64"; \
-#    fi; \
-#    wget https://github.com/linyuchen/PMHQ/releases/download/v${PMHQ_VERSION}/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
-#    unzip /opt/pmhq.zip -d /opt/ && \
-#    rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        arch="arm64"; \
+    else \
+        arch="x64"; \
+    fi; \
+    wget https://github.com/linyuchen/PMHQ/releases/download/v${PMHQ_VERSION}/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
+    unzip /opt/pmhq.zip -d /opt/ && \
+    rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
 
-COPY /dist/pmhq-linux-x64 /opt/pmhq
+#COPY /dist/pmhq-linux-x64 /opt/pmhq
 #COPY /dist/pmhq-linux-arm64 /opt/pmhq
 RUN chmod +x /opt/pmhq
 RUN cat <<EOF > /opt/pmhq_config.json
