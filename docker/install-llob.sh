@@ -178,7 +178,7 @@ $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE
 
 volumes:
   qq_volume:
-  llob_data:/app/llonebot/data
+  llob_data:
 
 networks:
   app_network:
