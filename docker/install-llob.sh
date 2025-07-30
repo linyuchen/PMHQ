@@ -147,6 +147,7 @@ services:
       - app_network
     volumes:
       - qq_volume:/root/.config/QQ
+      - llob_data:/app/llonebot/data
 
   llonebot:
     image: ${docker_mirror}linyuchen/llonebot:latest
@@ -171,11 +172,13 @@ $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE
       - app_network
     volumes:
       - qq_volume:/root/.config/QQ
+      - llob_data:/app/llonebot/data
     depends_on:
       - pmhq
 
 volumes:
   qq_volume:
+  llob_data:/app/llonebot/data
 
 networks:
   app_network:
