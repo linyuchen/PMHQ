@@ -27,6 +27,9 @@ ENABLE_SATORI="false"
 SATORI_PORT="5600"
 SATORI_TOKEN=""
 
+ENABLE_WEBUI="false"
+WEBUI_PORT=""
+
 declare -A SERVICE_PORTS
 
 # 交互式配置
@@ -42,6 +45,7 @@ while :; do
     echo "6) 设置OneBot 11 Token"
     echo "7) 设置Satori端口"
     echo "8) 设置Satori token"
+    echo "9) 设置WebUI端口"
     echo "0) 完成配置"
     printf "输入选项 (0-6): "
     read choice # 改用不带参数的 read 兼容dash
@@ -118,6 +122,16 @@ while :; do
         8)
             read -p "Satori token: " SATORI_TOKEN
             ;;
+        9)
+            while true; do
+                read -p "WebUI 端口: " port
+                [[ "$port" =~ ^[0-9]+$ ]] || { echo "错误：端口必须是数字！"; continue; }
+                WEBUI_PORT=${port}
+                break
+            done
+            SERVICE_PORTS["$WEBUI_PORT"]=1
+            ENABLE_WEBUI="true"
+            ;;
         *)
             echo "无效选项"
             ;;
@@ -167,6 +181,8 @@ $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE
       - ENABLE_SATORI=${ENABLE_SATORI}
       - SATORI_PORT=${SATORI_PORT}
       - SATORI_TOKEN=${SATORI_TOKEN}
+      - ENABLE_WEBUI=${ENABLE_WEBUI}
+      - WEBUI_PORT=${WEBUI_PORT}
 
     networks:
       - app_network

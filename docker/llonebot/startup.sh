@@ -4,6 +4,13 @@ cd /app/llonebot
 
 FILE="default_config.json"
 
+sed -i "/\"webui\": {/,/}/ {
+        s/\"enable\": true/\"enable\": ${ENABLE_WEBUI}/g
+    }" "$FILE"
+sed -i "/\"webui\": {/,/}/ {
+    s/\"port\":\s*3080/\"port\": ${WEBUI_PORT}/g
+}" "$FILE"
+
 sed -i "s/\"enableWs\":\s*true/\"enableWs\": ${ENABLE_ONEBOT_WS}/g" "$FILE"
 sed -i "s/\"enableHttp\":\s*true/\"enableHttp\": ${ENABLE_ONEBOT_HTTP}/g" "$FILE"
 
@@ -17,6 +24,7 @@ sed -i "/\"ob11\": {/,/}/ {
     }" "$FILE"
 
 sed -i "s/\"httpSecret\":\s*\"\"/\"httpSecret\": \"${ONEBOT_SECRET}\"/g" "$FILE"
+
 sed -i "/\"satori\": {/,/}/ {
         s/\"enable\": true/\"enable\": ${ENABLE_SATORI}/g
     }" "$FILE"
