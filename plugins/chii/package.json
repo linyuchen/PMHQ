@@ -1,0 +1,12 @@
+{
+    "scripts": {
+        "patch": "npx patch-package chii",
+        "postinstall": "patch-package"
+    },
+    "dependencies": {
+        "chii": "1.15.4"
+    },
+    "devDependencies": {
+        "patch-package": "8.0.0"
+    }
+}

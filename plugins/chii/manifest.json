@@ -1,0 +1,31 @@
+{
+    "manifest_version": 4,
+    "type": "extension",
+    "name": "Chii DevTools",
+    "slug": "chii_devtools",
+    "description": "使用 Chii 进行远程调试，在窗口按 F12 或 Ctrl + Shift + I 即可打开 DevTools 窗口",
+    "version": "1.0.3",
+    "authors": [
+        {
+            "name": "沫烬染",
+            "link": "https://github.com/mo-jinran"
+        }
+    ],
+    "platform": [
+        "win32",
+        "linux",
+        "darwin"
+    ],
+    "injects": {
+        "main": "./src/main.js",
+        "preload": "./src/preload.js"
+    },
+    "repository": {
+        "repo": "mo-jinran/chii-devtools",
+        "branch": "v4",
+        "release": {
+            "tag": "1.0.3",
+            "file": "chii-devtools.zip"
+        }
+    }
+}

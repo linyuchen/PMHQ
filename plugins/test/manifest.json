@@ -1,0 +1,10 @@
+{
+  "name": "test-plugin",
+  "version": "1.0.0",
+  "description": "A test plugin for demonstration",
+  "injects": {
+    "main": "./main.js",
+    "preload": "./preload.js",
+    "renderer": "./renderer.js"
+  }
+}
