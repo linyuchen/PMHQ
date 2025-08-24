@@ -2,6 +2,10 @@
 
 Pure memory hook QQNT
 
+## JS 插件开发
+
+见 [plugin.md](./doc/plugin.md)
+
 ## API 对接
 
 * 使用 API 收发 Protobuf 见 [API.md](./doc/api.md)
