@@ -1,12 +1,13 @@
 name: Build and Push PMHQ Docker Image
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag for the Docker image'
+        description: 'Version tag for the Docker image (leave empty to use latest release tag)'
         required: false
-        default: '3.0.0'
         type: string
 
 jobs:
@@ -26,9 +27,30 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       
+      - name: Get version
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            # Release触发时使用release的tag
+            version="${{ github.event.release.tag_name }}"
+            echo "Using release tag: $version"
+          elif [ -n "${{ github.event.inputs.version }}" ]; then
+            # 手动触发且指定了版本
+            version="${{ github.event.inputs.version }}"
+            echo "Using manual input version: $version"
+          else
+            # 手动触发但没指定版本，获取最新release
+            version=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name')
+            echo "Using latest release tag: $version"
+          fi
+          # 移除可能的v前缀
+          version=${version#v}
+          echo "Final version: $version"
+          echo "version=$version" >> $GITHUB_OUTPUT
+      
       - name: Build and push PMHQ Docker image
         run: |
-          version="${{ github.event.inputs.version }}"
+          version="${{ steps.get_version.outputs.version }}"
           username="${{ secrets.DOCKER_USERNAME }}"
           echo "Building PMHQ with version: $version"
           docker buildx build \
@@ -45,5 +67,5 @@ jobs:
         run: |
           echo "✅ Successfully built and pushed PMHQ Docker image"
           echo "📦 Image tags:"
-          echo "  - ${{ secrets.DOCKER_USERNAME }}/pmhq:${{ github.event.inputs.version }}"
+          echo "  - ${{ secrets.DOCKER_USERNAME }}/pmhq:${{ steps.get_version.outputs.version }}"
           echo "  - ${{ secrets.DOCKER_USERNAME }}/pmhq:latest"
