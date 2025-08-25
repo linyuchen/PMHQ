@@ -6,4 +6,6 @@
 
 插件放在 PMHQ 同级目录的 `plugins` 目录下，pmhq 启动时会自动加载
 
+如果 preload 脚本没有被加载，需要在 `pmhq_config.json` 启用 `qq_console`
+
 插件示例见本仓库的 [plugins](https://github.com/linyuchen/PMHQ/tree/main/plugins)
