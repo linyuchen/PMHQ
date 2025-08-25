@@ -1,0 +1,47 @@
+name: Build and Push PMHQ Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag for the Docker image'
+        required: false
+        default: '3.0.0'
+        type: string
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push PMHQ Docker image
+        run: |
+          version="${{ github.event.inputs.version }}"
+          echo "Building PMHQ with version: $version"
+          docker buildx build \
+            --progress=plain \
+            --platform linux/amd64,linux/arm64 \
+            -t "${{ secrets.DOCKER_USERNAME }}/pmhq:$version" \
+            -t "${{ secrets.DOCKER_USERNAME }}/pmhq:latest" \
+            -f docker/pmhq/Dockerfile \
+            --push \
+            .
+      
+      - name: Output build summary
+        run: |
+          echo "✅ Successfully built and pushed PMHQ Docker image"
+          echo "📦 Image tags:"
+          echo "  - ${{ secrets.DOCKER_USERNAME }}/pmhq:${{ github.event.inputs.version }}"
+          echo "  - ${{ secrets.DOCKER_USERNAME }}/pmhq:latest"

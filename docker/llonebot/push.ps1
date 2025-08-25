@@ -1,2 +1,2 @@
-$version = "5.7.0"
+$version = "5.8.0"
 docker buildx build --no-cache --build-arg LLONEBOT_VERSION=$version --platform linux/amd64,linux/arm64 -t "linyuchen/llonebot:$version" -t "linyuchen/llonebot:latest" -f docker/llonebot/Dockerfile --push .
