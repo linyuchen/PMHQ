@@ -29,12 +29,14 @@ jobs:
       - name: Build and push LLOneBot Docker image
         run: |
           version="${{ github.event.inputs.version }}"
+          username="${{ secrets.DOCKER_USERNAME }}"
           echo "Building LLOneBot with version: $version"
           docker buildx build \
             --progress=plain \
+            --build-arg LLONEBOT_VERSION="$version" \
             --platform linux/amd64,linux/arm64 \
-            -t "${{ secrets.DOCKER_USERNAME }}/llonebot:$version" \
-            -t "${{ secrets.DOCKER_USERNAME }}/llonebot:latest" \
+            -t "$username/llonebot:$version" \
+            -t "$username/llonebot:latest" \
             -f docker/llonebot/Dockerfile \
             --push \
             .

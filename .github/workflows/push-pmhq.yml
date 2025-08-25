@@ -29,12 +29,14 @@ jobs:
       - name: Build and push PMHQ Docker image
         run: |
           version="${{ github.event.inputs.version }}"
+          username="${{ secrets.DOCKER_USERNAME }}"
           echo "Building PMHQ with version: $version"
           docker buildx build \
             --progress=plain \
             --platform linux/amd64,linux/arm64 \
-            -t "${{ secrets.DOCKER_USERNAME }}/pmhq:$version" \
-            -t "${{ secrets.DOCKER_USERNAME }}/pmhq:latest" \
+            --build-arg PMHQ_VERSION="$version" \
+            -t "$username/pmhq:$version" \
+            -t "$username/pmhq:latest" \
             -f docker/pmhq/Dockerfile \
             --push \
             .
