@@ -197,17 +197,25 @@ networks:
     driver: bridge
 EOF
 
+printLogin(){
+    if [ "$ENABLE_WEBUI" == "true" ]; then
+        echo "浏览器打开 http://localhost:${WEBUI_PORT} WebUI 页面进行登录"
+    else
+        echo "进入容器日志扫码进行登录"
+    fi
+}
+
 # 检查root权限
 if [ "$(id -u)" -ne 0 ]; then
     echo "没有 root 权限，请手动运行 sudo docker compose up -d"
-    echo "浏览器打开 http://localhost:${QQ_LOGIN_PORT} 登录 QQ 即可"
+    printLogin
     exit 1
 fi
 if ! command -v docker &> /dev/null; then
   echo "没有安装 Docker！安装后运行 sudo docker compose up -d"
-  echo "浏览器打开 http://localhost:${QQ_LOGIN_PORT} 登录 QQ 即可"
+  printLogin
   exit 1
 fi
 docker compose up -d
 
-echo "浏览器打开 http://localhost:${QQ_LOGIN_PORT} 登录 QQ 即可"
+printLogin
