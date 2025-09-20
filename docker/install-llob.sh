@@ -150,6 +150,7 @@ services:
   pmhq:
     image: ${docker_mirror}linyuchen/pmhq:latest
     container_name: pmhq
+    privileged: true
     environment:
       - ENABLE_HEADLESS=${ENABLE_HEADLESS}
     networks:
