@@ -31,6 +31,9 @@ RUN apt-get update && apt-get install -y \
     libgbm1 \
     libasound2t64 \
     fonts-noto-cjk \
+    libxss1 \
+    openssl \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
     
 # 设置时区
@@ -44,17 +47,9 @@ RUN \
     && apt-get install -f -y ./qq.deb \
     && rm qq.deb
 
-RUN if [ "$TARGETARCH" = "arm64" ]; then \
-        arch="arm64"; \
-    else \
-        arch="x64"; \
-    fi; \
-    wget https://github.com/linyuchen/PMHQ/releases/download/v${PMHQ_VERSION}/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
-    unzip /opt/pmhq.zip -d /opt/ && \
-    rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
 
 #COPY /dist/pmhq-linux-x64 /opt/pmhq
-#COPY /dist/pmhq-linux-arm64 /opt/pmhq
+COPY /dist/pmhq-linux-arm64 /opt/pmhq
 RUN chmod +x /opt/pmhq
 RUN cat <<EOF > /opt/pmhq_config.json
 {

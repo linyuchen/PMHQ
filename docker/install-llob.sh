@@ -1,20 +1,11 @@
 #!/bin/bash
 
-if ! command -v docker &> /dev/null; then
-  echo "请先安装 Docker！"
-  exit 1
-fi
-
-# 用户输入
-read -p "noVNC 端口（默认 6080）: " NOVNC_PORT
-NOVNC_PORT=${NOVNC_PORT:-6080}
-
-VNC_PASSWORD=""
-while [ -z "$VNC_PASSWORD" ]; do
-    read -p "VNC 密码（必填）: " VNC_PASSWORD
+PASSWORD=""
+while [ -z "$PASSWORD" ]; do
+    read -p "默认密码（必填，用于WEBUI和协议token，仅支持英文和数字）: " PASSWORD
 done
 
-ONEBOT_TOKEN=""
+ONEBOT_TOKEN=$PASSWORD
 ONEBOT_SECRET=""
 ONEBOT_WS_URLS="["
 ONEBOT_HTTP_URLS="["
@@ -25,10 +16,12 @@ ONEBOT_HTTP_PORT="3000"
 
 ENABLE_SATORI="false"
 SATORI_PORT="5600"
-SATORI_TOKEN=""
+SATORI_TOKEN=$PASSWORD
 
 ENABLE_WEBUI="false"
 WEBUI_PORT=""
+
+ENABLE_HEADLESS="false"
 
 declare -A SERVICE_PORTS
 
@@ -37,15 +30,16 @@ while :; do
     clear
     echo "------------------------"
     echo "请选择服务设置："
-    echo "1) 设置OneBot 11正向WS"
-    echo "2) 添加OneBot 11反向WS"
-    echo "3) 设置OneBot 11 HTTP服务"
-    echo "4) 添加OneBot 11 HTTP上报"
-    echo "5) 设置OneBot 11 HTTP POST secret"
-    echo "6) 设置OneBot 11 Token"
-    echo "7) 设置Satori端口"
-    echo "8) 设置Satori token"
-    echo "9) 设置WebUI端口"
+    echo "1) 设置 OneBot 11 正向 WS"
+    echo "2) 添加 OneBot 11 反向 WS"
+    echo "3) 设置 OneBot 11 HTTP 服务"
+    echo "4) 添加 OneBot 11 HTTP 上报"
+    echo "5) 设置 OneBot 11 HTTP POST secret"
+    echo "6) 设置 OneBot 11 Token，不设置则使用刚才的默认密码"
+    echo "7) 设置 Satori 端口"
+    echo "8) 设置 Satori token，不设置则使用刚才的默认密码"
+    echo "9) 设置 WebUI 配置页端口，不设置则不启用 WebUI 配置"
+    echo "10) 启用无头模式（无头模式省内存，有头模式较稳定）"
     echo "0) 完成配置"
     printf "输入选项 (0-6): "
     read choice # 改用不带参数的 read 兼容dash
@@ -132,6 +126,9 @@ while :; do
             SERVICE_PORTS["$WEBUI_PORT"]=1
             ENABLE_WEBUI="true"
             ;;
+        10)
+            ENABLE_HEADLESS="true"
+            ;;
         *)
             echo "无效选项"
             ;;
@@ -153,10 +150,8 @@ services:
   pmhq:
     image: ${docker_mirror}linyuchen/pmhq:latest
     container_name: pmhq
-    ports:
-      - "${NOVNC_PORT}:6080"
     environment:
-      - VNC_PASSWORD=${VNC_PASSWORD}
+      - ENABLE_HEADLESS=${ENABLE_HEADLESS}
     networks:
       - app_network
     volumes:
@@ -183,6 +178,7 @@ $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE
       - SATORI_TOKEN=${SATORI_TOKEN}
       - ENABLE_WEBUI=${ENABLE_WEBUI}
       - WEBUI_PORT=${WEBUI_PORT}
+      - WEBUI_TOKEN=${PASSWORD}
 
     networks:
       - app_network
@@ -204,9 +200,14 @@ EOF
 # 检查root权限
 if [ "$(id -u)" -ne 0 ]; then
     echo "没有 root 权限，请手动运行 sudo docker compose up -d"
-    echo "之后浏览器打开 http://localhost:${NOVNC_PORT}/vnc.html 访问 noVNC 登录QQ即可"
+    echo "浏览器打开 http://localhost:${QQ_LOGIN_PORT} 登录 QQ 即可"
     exit 1
+fi
+if ! command -v docker &> /dev/null; then
+  echo "没有安装 Docker！安装后运行 sudo docker compose up -d"
+  echo "浏览器打开 http://localhost:${QQ_LOGIN_PORT} 登录 QQ 即可"
+  exit 1
 fi
 docker compose up -d
 
-echo "浏览器打开 http://localhost:${NOVNC_PORT}/vnc.html 访问 noVNC 登录QQ即可"
+echo "浏览器打开 http://localhost:${QQ_LOGIN_PORT} 登录 QQ 即可"

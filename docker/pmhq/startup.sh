@@ -3,6 +3,11 @@
 set -e
 echo "$(date): Startup script initiated."
 
+# Write environment variables to a file config
+
+CONFIG_FILE="/opt/pmhq_config.json"
+sed -i "s/\"headless\":\s*false/\"headless\": ${ENABLE_HEADLESS}/g" "$CONFIG_FILE"
+
 # Set DISPLAY globally for the script
 export DISPLAY=:99
 echo "$(date): Global DISPLAY set to $DISPLAY"
@@ -57,26 +62,11 @@ while ! xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; do
 done
 echo "$(date): X server on $DISPLAY is ready."
 
-# ... (the rest of your script: starting x11vnc, dbus-run-session for pmhq, novnc_proxy, and the monitoring loop) ...
-# Ensure the dbus-run-session line is still:
-# dbus-run-session sh -c "exec env DISPLAY='$DISPLAY' LIBGL_ALWAYS_SOFTWARE='$LIBGL_ALWAYS_SOFTWARE' /usr/local/bin/pmhq" &
-
-echo "$(date): Starting x11vnc..."
-x11vnc -storepasswd "$VNC_PASSWORD" ~/.vnc/passwd
-x11vnc -display "$DISPLAY" -forever -shared -rfbauth ~/.vnc/passwd -noxrecord -bg &
-X11VNC_PID=$!
-echo "$(date): x11vnc started with PID $X11VNC_PID"
-
 echo "$(date): Starting pmhq (QQ)..."
 #/opt/pmhq
 dbus-run-session sh -c "exec env DISPLAY='$DISPLAY' LIBGL_ALWAYS_SOFTWARE='$LIBGL_ALWAYS_SOFTWARE' /opt/pmhq" &
 PMHQ_LAUNCHER_PID=$!
 echo "$(date): pmhq (QQ) launched via dbus-run-session (PID $PMHQ_LAUNCHER_PID) with DISPLAY=$DISPLAY."
-
-echo "$(date): Starting noVNC proxy..."
-/opt/novnc/utils/novnc_proxy --listen 6080 --vnc localhost:5900 &
-NOVNC_PID=$!
-echo "$(date): noVNC proxy started with PID $NOVNC_PID"
 
 echo "$(date): All services launched. Monitoring critical processes..."
 
@@ -85,10 +75,6 @@ while true; do
         echo "$(date): CRITICAL: Xvfb (PID $XFB_PID) has died. Exiting."
         exit 1
     fi
-#    if ! kill -0 $X11VNC_PID 2>/dev/null; then
-#        echo "$(date): CRITICAL: x11vnc (PID $X11VNC_PID) has died. Exiting."
-#        exit 1
-#    fi
     if ! kill -0 $PMHQ_LAUNCHER_PID 2>/dev/null; then
         echo "$(date): CRITICAL: Application launcher (dbus-run-session for pmhq/QQ, PID $PMHQ_LAUNCHER_PID) has died. Likely application failure. Exiting."
         exit 1
