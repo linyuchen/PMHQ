@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     libgbm1 \
     libasound2t64 \
     fonts-noto-cjk \
+    libxss1 \
     && rm -rf /var/lib/apt/lists/*
     
 # 设置时区
