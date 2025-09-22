@@ -7,6 +7,7 @@
 ```json5
 {
   "debug": false,
+  "headless": false,
   "enable_gui": true,
   "default_host": "127.0.0.1",
   "default_port": 13000,
@@ -23,6 +24,8 @@
 ```
 
 debug: 是否开启调试模式，开启后会输出 pb，并且 ws 会推送 send 的pb
+
+headless: 是否启用无头 QQ 模式
 
 enable_gui: 是否启用 GUI 界面，仅 Windows 有效
 

@@ -2,7 +2,7 @@
 
 PASSWORD=""
 while [ -z "$PASSWORD" ]; do
-    read -p "默认密码（必填，用于WEBUI和协议token，仅支持英文和数字）: " PASSWORD
+    read -p "默认密码（必填，用于 WEBUI 和协议 token，仅支持英文和数字）: " PASSWORD
 done
 
 ONEBOT_TOKEN=$PASSWORD
