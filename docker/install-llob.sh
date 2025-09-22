@@ -18,8 +18,8 @@ ENABLE_SATORI="false"
 SATORI_PORT="5600"
 SATORI_TOKEN=$PASSWORD
 
-ENABLE_WEBUI="false"
-WEBUI_PORT=""
+ENABLE_WEBUI="true"
+WEBUI_PORT="3080"
 
 ENABLE_HEADLESS="false"
 
@@ -38,7 +38,7 @@ while :; do
     echo "6) 设置 OneBot 11 Token，不设置则使用刚才的默认密码"
     echo "7) 设置 Satori 端口"
     echo "8) 设置 Satori token，不设置则使用刚才的默认密码"
-    echo "9) 设置 WebUI 配置页端口，不设置则不启用 WebUI 配置"
+    echo "9) 设置 WebUI 配置页端口，默认 3080"
     echo "10) 启用无头模式（无头模式省内存，有头模式较稳定）"
     echo "0) 完成配置"
     printf "输入选项 (0-6): "
