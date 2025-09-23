@@ -7,6 +7,7 @@ echo "$(date): Startup script initiated."
 
 CONFIG_FILE="/opt/pmhq_config.json"
 sed -i "s/\"headless\":\s*false/\"headless\": ${ENABLE_HEADLESS}/g" "$CONFIG_FILE"
+sed -i "s/\"quick_login_qq\":\s*\"\"/\"quick_login_qq\": \"${AUTO_LOGIN_QQ}\"/g" "$CONFIG_FILE"
 
 # Set DISPLAY globally for the script
 export DISPLAY=:99

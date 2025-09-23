@@ -63,7 +63,8 @@ RUN cat <<EOF > /opt/pmhq_config.json
     "default_port": 13000,
     "servers": [],
     "qq_path": "",
-    "headless": false
+    "headless": false,
+    "quick_login_qq": ""
 }
 EOF
 

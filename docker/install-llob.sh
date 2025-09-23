@@ -23,6 +23,8 @@ WEBUI_PORT="3080"
 
 ENABLE_HEADLESS="false"
 
+AUTO_LOGIN_QQ=""
+
 declare -A SERVICE_PORTS
 
 # 交互式配置
@@ -40,6 +42,7 @@ while :; do
     echo "8) 设置 Satori token，不设置则使用刚才的默认密码"
     echo "9) 设置 WebUI 配置页端口，默认 3080"
     echo "10) 启用无头模式（无头模式省内存，有头模式较稳定）"
+    echo "11) 设置自动登录 QQ 号"
     echo "0) 完成配置"
     printf "输入选项 (0-6): "
     read choice # 改用不带参数的 read 兼容dash
@@ -129,6 +132,9 @@ while :; do
         10)
             ENABLE_HEADLESS="true"
             ;;
+        11)
+          read -p "自动登录 QQ 号（留空则不自动登录）: " AUTO_LOGIN_QQ
+          ;;
         *)
             echo "无效选项"
             ;;
@@ -153,6 +159,7 @@ services:
     privileged: true
     environment:
       - ENABLE_HEADLESS=${ENABLE_HEADLESS}
+      - AUTO_LOGIN_QQ=${AUTO_LOGIN_QQ}
     networks:
       - app_network
     volumes:
