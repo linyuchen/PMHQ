@@ -20,7 +20,7 @@ SATORI_TOKEN=$PASSWORD
 
 ENABLE_WEBUI="true"
 WEBUI_PORT="3080"
-
+SERVICE_PORTS["$WEBUI_PORT"]=1
 ENABLE_HEADLESS="false"
 
 AUTO_LOGIN_QQ=""
@@ -44,7 +44,7 @@ while :; do
     echo "10) 启用无头模式（无头模式省内存，有头模式较稳定）"
     echo "11) 设置自动登录 QQ 号"
     echo "0) 完成配置"
-    printf "输入选项 (0-6): "
+    printf "输入选项: "
     read choice # 改用不带参数的 read 兼容dash
 
     case $choice in

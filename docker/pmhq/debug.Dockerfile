@@ -48,8 +48,8 @@ RUN \
     && rm qq.deb
 
 
-#COPY /dist/pmhq-linux-x64 /opt/pmhq
-COPY /dist/pmhq-linux-arm64 /opt/pmhq
+COPY /dist/pmhq-linux-x64 /opt/pmhq
+#COPY /dist/pmhq-linux-arm64 /opt/pmhq
 RUN chmod +x /opt/pmhq
 RUN cat <<EOF > /opt/pmhq_config.json
 {
@@ -57,7 +57,8 @@ RUN cat <<EOF > /opt/pmhq_config.json
     "default_port": 13000,
     "servers": [],
     "qq_path": "",
-    "headless": false
+    "headless": false,
+    "quick_login_qq": ""
 }
 EOF
 
