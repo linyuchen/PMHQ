@@ -5,19 +5,6 @@ while [ -z "$PASSWORD" ]; do
     read -p "默认密码（必填，用于 WEBUI 和协议 token，仅支持英文和数字）: " PASSWORD
 done
 
-ONEBOT_TOKEN=$PASSWORD
-ONEBOT_SECRET=""
-ONEBOT_WS_URLS="["
-ONEBOT_HTTP_URLS="["
-ENABLE_ONEBOT_WS="false"
-ENABLE_ONEBOT_HTTP="false"
-ONEBOT_WS_PORT="3001"
-ONEBOT_HTTP_PORT="3000"
-
-ENABLE_SATORI="false"
-SATORI_PORT="5600"
-SATORI_TOKEN=$PASSWORD
-
 ENABLE_WEBUI="true"
 WEBUI_PORT="3080"
 SERVICE_PORTS["$WEBUI_PORT"]=1
@@ -32,94 +19,17 @@ while :; do
     clear
     echo "------------------------"
     echo "请选择服务设置："
-    echo "1) 设置 OneBot 11 正向 WS"
-    echo "2) 添加 OneBot 11 反向 WS"
-    echo "3) 设置 OneBot 11 HTTP 服务"
-    echo "4) 添加 OneBot 11 HTTP 上报"
-    echo "5) 设置 OneBot 11 HTTP POST secret"
-    echo "6) 设置 OneBot 11 Token，不设置则使用刚才的默认密码"
-    echo "7) 设置 Satori 端口"
-    echo "8) 设置 Satori token，不设置则使用刚才的默认密码"
-    echo "9) 设置 WebUI 配置页端口，默认 3080"
-    echo "10) 启用无头模式（无头模式省内存，有头模式较稳定）"
-    echo "11) 设置自动登录 QQ 号"
+    echo "1) 设置 WebUI 配置页端口，默认 3080"
+    echo "2) 设置自动登录 QQ 号"
+    echo "3) 启用无头模式（无头模式省内存，有头模式较稳定）"
     echo "0) 完成配置"
     printf "输入选项: "
     read choice # 改用不带参数的 read 兼容dash
 
     case $choice in
         0)
-            ONEBOT_WS_URLS+="]"
-            ONEBOT_HTTP_URLS+="]"
             break ;;
-        1|3)
-            # 正向WS/HTTP服务
-            # 端口验证
-            while true; do
-                read -p "Port: " port
-                [[ "$port" =~ ^[0-9]+$ ]] || { echo "错误：端口必须是数字！"; continue; }
-                port=${port}
-                break
-            done
-
-            if [ "$choice" == "1" ]; then
-                if [ "$ONEBOT_HTTP_PORT" == "$port" ]; then
-                    echo "错误：WS端口不能与HTTP端口相同！"
-                    continue
-                fi
-                ONEBOT_WS_PORT="$port"
-                ENABLE_ONEBOT_WS="true"
-            else
-                if [ "$ONEBOT_WS_PORT" == "$port" ]; then
-                    echo "错误：HTTP端口不能与WS端口相同！"
-                    continue
-                fi
-                ONEBOT_HTTP_PORT="$port"
-                ENABLE_ONEBOT_HTTP="true"
-            fi
-            SERVICE_PORTS["$port"]=1
-            ;;
-        2|4)
-            # 反向服务
-            if [ "$choice" == "2" ]; then
-              read -p "Url 如 ws://host.docker.internal:8080/onebot/v11/ws）: " url
-              url=${url////\/}
-              if [ "$ONEBOT_WS_URLS" == "[" ]; then
-                url="\"$url\""
-              else
-                url=",\"$url\""
-              fi
-              ONEBOT_WS_URLS+="$url"
-            else
-              read -p "Url 如 http://host.docker.internal:8080/onebot/v11/）: " url
-              if [ "$ONEBOT_HTTP_URLS" == "[" ]; then
-                url="\"$url\""
-              else
-                url=",\"$url\""
-              fi
-              ONEBOT_HTTP_URLS+="$url"
-            fi
-            ;;
-        5)
-            read -p "Secret:" ONEBOT_SECRET
-            ;;
-        6)
-            read -p "Token:" ONEBOT_TOKEN
-            ;;
-        7)
-            while true; do
-                read -p "Satori port: " port
-                [[ "$port" =~ ^[0-9]+$ ]] || { echo "错误：端口必须是数字！"; continue; }
-                SATORI_PORT=${port}
-                break
-            done
-            SERVICE_PORTS["$SATORI_PORT"]=1
-            ENABLE_SATORI="true"
-            ;;
-        8)
-            read -p "Satori token: " SATORI_TOKEN
-            ;;
-        9)
+        1)
             while true; do
                 read -p "WebUI 端口: " port
                 [[ "$port" =~ ^[0-9]+$ ]] || { echo "错误：端口必须是数字！"; continue; }
@@ -129,12 +39,13 @@ while :; do
             SERVICE_PORTS["$WEBUI_PORT"]=1
             ENABLE_WEBUI="true"
             ;;
-        10)
-            ENABLE_HEADLESS="true"
-            ;;
-        11)
+        2)
           read -p "自动登录 QQ 号（留空则不自动登录）: " AUTO_LOGIN_QQ
           ;;
+        3)
+            ENABLE_HEADLESS="true"
+            ;;
+
         *)
             echo "无效选项"
             ;;
@@ -173,14 +84,6 @@ $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      - ENABLE_ONEBOT_WS=${ENABLE_ONEBOT_WS}
-      - ENABLE_ONEBOT_HTTP=${ENABLE_ONEBOT_HTTP}
-      - ONEBOT_WS_PORT=${ONEBOT_WS_PORT}
-      - ONEBOT_HTTP_PORT=${ONEBOT_HTTP_PORT}
-      - ONEBOT_WS_URLS=${ONEBOT_WS_URLS}
-      - ONEBOT_HTTP_URLS=${ONEBOT_HTTP_URLS}
-      - ONEBOT_TOKEN=${ONEBOT_TOKEN}
-      - ONEBOT_SECRET=${ONEBOT_SECRET}
       - ENABLE_SATORI=${ENABLE_SATORI}
       - SATORI_PORT=${SATORI_PORT}
       - SATORI_TOKEN=${SATORI_TOKEN}
