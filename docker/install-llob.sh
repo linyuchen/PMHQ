@@ -22,6 +22,7 @@ while :; do
     echo "1) 设置 WebUI 配置页端口，默认 3080"
     echo "2) 设置自动登录 QQ 号"
     echo "3) 启用无头模式（无头模式省内存，有头模式较稳定）"
+    echo "4) 添加映射端口"
     echo "0) 完成配置"
     printf "输入选项: "
     read choice # 改用不带参数的 read 兼容dash
@@ -37,7 +38,6 @@ while :; do
                 break
             done
             SERVICE_PORTS["$WEBUI_PORT"]=1
-            ENABLE_WEBUI="true"
             ;;
         2)
           read -p "自动登录 QQ 号（留空则不自动登录）: " AUTO_LOGIN_QQ
@@ -45,7 +45,14 @@ while :; do
         3)
             ENABLE_HEADLESS="true"
             ;;
-
+        4)
+            while true; do
+                read -p "端口号: " port
+                [[ "$port" =~ ^[0-9]+$ ]] || { echo "错误：端口必须是数字！"; continue; }
+                SERVICE_PORTS["$port"]=1
+                break
+            done
+            ;;
         *)
             echo "无效选项"
             ;;
