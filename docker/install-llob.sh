@@ -60,11 +60,32 @@ while :; do
 done
 
 docker_mirror=""
+PMHQ_TAG="latest"
+LLOB_TAG="latest"
 
 read -p "是否使用docker镜像源(y/n): " use_docker_mirror
 
 if [[ "$use_docker_mirror" =~ ^[yY]$ ]]; then
   docker_mirror="docker.1ms.run/"
+  echo "正在获取最新版本信息..."
+  
+  # 获取PMHQ最新标签
+  PMHQ_RELEASE=$(curl -s "https://gh-proxy.com/https://api.github.com/repos/linyuchen/PMHQ/releases/latest")
+  if [ $? -eq 0 ]; then
+    PMHQ_TAG=$(echo "$PMHQ_RELEASE" | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4)
+    echo "PMHQ 最新版本: $PMHQ_TAG"
+  else
+    echo "警告: 无法获取PMHQ最新版本，使用latest"
+  fi
+  
+  # 获取LLOneBot最新标签
+  LLOB_RELEASE=$(curl -s "https://gh-proxy.com/https://api.github.com/repos/LLOneBot/LLOneBot/releases/latest")
+  if [ $? -eq 0 ]; then
+    LLOB_TAG=$(echo "$LLOB_RELEASE" | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4)
+    echo "LLOneBot 最新版本: $LLOB_TAG"
+  else
+    echo "警告: 无法获取LLOneBot最新版本，使用latest"
+  fi
 fi
 # 生成docker-compose.yml（使用双引号包裹并保留转义）
 cat << EOF > docker-compose.yml
@@ -72,7 +93,7 @@ version: '3.8'
 
 services:
   pmhq:
-    image: ${docker_mirror}linyuchen/pmhq:latest
+    image: ${docker_mirror}linyuchen/pmhq:${PMHQ_TAG}
     container_name: pmhq
     privileged: true
     environment:
@@ -85,7 +106,7 @@ services:
       - llob_data:/app/llonebot/data
 
   llonebot:
-    image: ${docker_mirror}linyuchen/llonebot:latest
+    image: ${docker_mirror}linyuchen/llonebot:${LLOB_TAG}
 $([ ${#SERVICE_PORTS[@]} -gt 0 ] && echo "    ports:" && for port in "${!SERVICE_PORTS[@]}"; do echo "      - \"${port}:${port}\""; done)
 
     extra_hosts:
