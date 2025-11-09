@@ -72,7 +72,7 @@ if [[ "$use_docker_mirror" =~ ^[yY]$ ]]; then
   # 获取PMHQ最新标签
   PMHQ_RELEASE=$(curl -s "https://gh-proxy.com/https://api.github.com/repos/linyuchen/PMHQ/releases/latest")
   if [ $? -eq 0 ]; then
-    PMHQ_TAG=$(echo "$PMHQ_RELEASE" | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4)
+    PMHQ_TAG=$(echo "$PMHQ_RELEASE" | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4 | sed 's/^v//')
     echo "PMHQ 最新版本: $PMHQ_TAG"
   else
     echo "警告: 无法获取PMHQ最新版本，使用latest"
@@ -81,7 +81,7 @@ if [[ "$use_docker_mirror" =~ ^[yY]$ ]]; then
   # 获取LLOneBot最新标签
   LLOB_RELEASE=$(curl -s "https://gh-proxy.com/https://api.github.com/repos/LLOneBot/LLOneBot/releases/latest")
   if [ $? -eq 0 ]; then
-    LLOB_TAG=$(echo "$LLOB_RELEASE" | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4)
+    LLOB_TAG=$(echo "$LLOB_RELEASE" | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4 | sed 's/^v//')
     echo "LLOneBot 最新版本: $LLOB_TAG"
   else
     echo "警告: 无法获取LLOneBot最新版本，使用latest"
