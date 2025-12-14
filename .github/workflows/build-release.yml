@@ -1,0 +1,166 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., 5.2.1)'
+        required: true
+        type: string
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout private repo
+        uses: actions/checkout@v4
+        with:
+          repository: linyuchen/LuckyLilliaHook
+          token: ${{ secrets.ACTION_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: |
+          uv sync
+          npm install
+
+      - name: Build JS
+        run: npm run build
+
+      - name: Build Windows x64
+        run: |
+          uv run nuitka --standalone --onefile `
+            --mingw64 `
+            --assume-yes-for-downloads `
+            --include-data-files=.venv/Lib/site-packages/capstone/lib/capstone.dll=capstone/lib/capstone.dll `
+            --include-data-files=dist/loader_preload.js=dist/loader_preload.js `
+            --include-data-files=resource/*=resource/ `
+            --output-dir=dist `
+            --output-filename=pmhq-win-x64.exe `
+            --product-name=pmhq-win-x64 `
+            --product-version=${{ inputs.version }} `
+            --windows-icon-from-ico=resource/icon.ico `
+            --windows-uac-admin `
+            src/pmhq.py
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmhq-win-x64
+          path: dist/pmhq-win-x64.exe
+
+  build-linux-x64:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:12
+    steps:
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl git nodejs npm
+
+      - name: Checkout private repo
+        uses: actions/checkout@v4
+        with:
+          repository: linyuchen/LuckyLilliaHook
+          token: ${{ secrets.ACTION_TOKEN }}
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          $HOME/.local/bin/uv sync
+          npm install
+
+      - name: Build JS
+        run: npm run build
+
+      - name: Build Linux x64
+        run: |
+          $HOME/.local/bin/uv run pip install pyarmor pyinstaller
+          $HOME/.local/bin/uv run pyarmor gen --pack pmhq.onefile.spec ./src/pmhq.py
+          mv dist/pmhq dist/pmhq-linux-x64
+
+      - name: Upload Linux x64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmhq-linux-x64
+          path: dist/pmhq-linux-x64
+
+  build-linux-arm64:
+    runs-on: ubuntu-24.04-arm
+    container:
+      image: debian:12
+    steps:
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl git nodejs npm
+
+      - name: Checkout private repo
+        uses: actions/checkout@v4
+        with:
+          repository: linyuchen/LuckyLilliaHook
+          token: ${{ secrets.ACTION_TOKEN }}
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          $HOME/.local/bin/uv sync
+          npm install
+
+      - name: Build JS
+        run: npm run build
+
+      - name: Build Linux ARM64
+        run: |
+          $HOME/.local/bin/uv run pip install pyarmor pyinstaller
+          $HOME/.local/bin/uv run pyarmor gen --pack pmhq.onefile.spec ./src/pmhq.py
+          mv dist/pmhq dist/pmhq-linux-arm64
+
+      - name: Upload Linux ARM64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmhq-linux-arm64
+          path: dist/pmhq-linux-arm64
+
+  release:
+    needs: [build-windows, build-linux-x64, build-linux-arm64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release Draft
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          name: Release v${{ inputs.version }}
+          draft: true
+          files: |
+            artifacts/pmhq-win-x64/pmhq-win-x64.exe
+            artifacts/pmhq-linux-x64/pmhq-linux-x64
+            artifacts/pmhq-linux-arm64/pmhq-linux-arm64
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
