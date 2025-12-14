@@ -160,6 +160,12 @@ jobs:
         with:
           path: artifacts
 
+      - name: Create zip files
+        run: |
+          cd artifacts/pmhq-win-x64 && zip ../pmhq-win-x64.zip pmhq-win-x64.exe && cd ../..
+          cd artifacts/pmhq-linux-x64 && zip ../pmhq-linux-x64.zip pmhq-linux-x64 && cd ../..
+          cd artifacts/pmhq-linux-arm64 && zip ../pmhq-linux-arm64.zip pmhq-linux-arm64 && cd ../..
+
       - name: Create Release Draft
         uses: softprops/action-gh-release@v2
         with:
@@ -167,8 +173,8 @@ jobs:
           name: Release v${{ inputs.version }}
           draft: true
           files: |
-            artifacts/pmhq-win-x64/pmhq-win-x64.exe
-            artifacts/pmhq-linux-x64/pmhq-linux-x64
-            artifacts/pmhq-linux-arm64/pmhq-linux-arm64
+            artifacts/pmhq-win-x64.zip
+            artifacts/pmhq-linux-x64.zip
+            artifacts/pmhq-linux-arm64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
