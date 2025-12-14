@@ -97,7 +97,6 @@ jobs:
 
       - name: Build Linux x64
         run: |
-          $HOME/.local/bin/uv run pip install pyarmor pyinstaller
           $HOME/.local/bin/uv run pyarmor gen --pack pmhq.onefile.spec ./src/pmhq.py
           mv dist/pmhq dist/pmhq-linux-x64
 
@@ -143,7 +142,6 @@ jobs:
 
       - name: Build Linux ARM64
         run: |
-          $HOME/.local/bin/uv run pip install pyarmor pyinstaller
           $HOME/.local/bin/uv run pyarmor gen --pack pmhq.onefile.spec ./src/pmhq.py
           mv dist/pmhq dist/pmhq-linux-arm64
 
