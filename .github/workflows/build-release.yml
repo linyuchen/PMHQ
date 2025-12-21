@@ -9,57 +9,57 @@ on:
         type: string
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout private repo
-        uses: actions/checkout@v4
-        with:
-          repository: linyuchen/LuckyLilliaHook
-          token: ${{ secrets.ACTION_TOKEN }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
-      - name: Install dependencies
-        run: |
-          uv sync
-          npm install
-
-      - name: Build JS
-        run: npm run build
-
-      - name: Build Windows x64
-        run: |
-          uv run nuitka --standalone --onefile `
-            --mingw64 `
-            --assume-yes-for-downloads `
-            --include-data-files=.venv/Lib/site-packages/capstone/lib/capstone.dll=capstone/lib/capstone.dll `
-            --include-data-files=dist/loader_preload.js=dist/loader_preload.js `
-            --include-data-files=resource/*=resource/ `
-            --output-dir=dist `
-            --output-filename=pmhq-win-x64.exe `
-            --product-name=pmhq-win-x64 `
-            --product-version=${{ inputs.version }} `
-            --windows-icon-from-ico=resource/icon.ico `
-            --windows-uac-admin `
-            src/pmhq.py
-
-      - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: pmhq-win-x64
-          path: dist/pmhq-win-x64.exe
+#  build-windows:
+#    runs-on: windows-latest
+#    steps:
+#      - name: Checkout private repo
+#        uses: actions/checkout@v4
+#        with:
+#          repository: linyuchen/LuckyLilliaHook
+#          token: ${{ secrets.ACTION_TOKEN }}
+#
+#      - name: Set up Python
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: '3.12'
+#
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '22'
+#
+#      - name: Install uv
+#        uses: astral-sh/setup-uv@v4
+#
+#      - name: Install dependencies
+#        run: |
+#          uv sync
+#          npm install
+#
+#      - name: Build JS
+#        run: npm run build
+#
+#      - name: Build Windows x64
+#        run: |
+#          uv run nuitka --standalone --onefile `
+#            --mingw64 `
+#            --assume-yes-for-downloads `
+#            --include-data-files=.venv/Lib/site-packages/capstone/lib/capstone.dll=capstone/lib/capstone.dll `
+#            --include-data-files=dist/loader_preload.js=dist/loader_preload.js `
+#            --include-data-files=resource/*=resource/ `
+#            --output-dir=dist `
+#            --output-filename=pmhq-win-x64.exe `
+#            --product-name=pmhq-win-x64 `
+#            --product-version=${{ inputs.version }} `
+#            --windows-icon-from-ico=resource/icon.ico `
+#            --windows-uac-admin `
+#            src/pmhq.py
+#
+#      - name: Upload Windows artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: pmhq-win-x64
+#          path: dist/pmhq-win-x64.exe
 
   build-linux-x64:
     runs-on: ubuntu-latest
@@ -152,7 +152,7 @@ jobs:
           path: dist/pmhq-linux-arm64
 
   release:
-    needs: [build-windows, build-linux-x64, build-linux-arm64]
+    needs: [build-linux-x64, build-linux-arm64]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
@@ -162,7 +162,7 @@ jobs:
 
       - name: Create zip files
         run: |
-          cd artifacts/pmhq-win-x64 && zip ../pmhq-win-x64.zip pmhq-win-x64.exe && cd ../..
+#          cd artifacts/pmhq-win-x64 && zip ../pmhq-win-x64.zip pmhq-win-x64.exe && cd ../..
           cd artifacts/pmhq-linux-x64 && zip ../pmhq-linux-x64.zip pmhq-linux-x64 && cd ../..
           cd artifacts/pmhq-linux-arm64 && zip ../pmhq-linux-arm64.zip pmhq-linux-arm64 && cd ../..
 
@@ -173,7 +173,7 @@ jobs:
           name: Release v${{ inputs.version }}
           draft: true
           files: |
-            artifacts/pmhq-win-x64.zip
+#            artifacts/pmhq-win-x64.zip
             artifacts/pmhq-linux-x64.zip
             artifacts/pmhq-linux-arm64.zip
         env:
