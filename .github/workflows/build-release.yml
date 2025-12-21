@@ -162,7 +162,6 @@ jobs:
 
       - name: Create zip files
         run: |
-#          cd artifacts/pmhq-win-x64 && zip ../pmhq-win-x64.zip pmhq-win-x64.exe && cd ../..
           cd artifacts/pmhq-linux-x64 && zip ../pmhq-linux-x64.zip pmhq-linux-x64 && cd ../..
           cd artifacts/pmhq-linux-arm64 && zip ../pmhq-linux-arm64.zip pmhq-linux-arm64 && cd ../..
 
@@ -173,7 +172,6 @@ jobs:
           name: Release v${{ inputs.version }}
           draft: true
           files: |
-#            artifacts/pmhq-win-x64.zip
             artifacts/pmhq-linux-x64.zip
             artifacts/pmhq-linux-arm64.zip
         env:
