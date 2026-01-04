@@ -11,7 +11,9 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
     fi; \
     wget https://github.com/linyuchen/PMHQ/releases/download/v${PMHQ_VERSION}/pmhq-linux-${arch}.zip -O /opt/pmhq.zip && \
     unzip /opt/pmhq.zip -d /opt/ && \
-    rm /opt/pmhq.zip && mv /opt/pmhq-linux-$arch /opt/pmhq
+    rm /opt/pmhq.zip && \ 
+    mv /opt/libpmhq.so /opt/
+    mv /opt/pmhq-linux-$arch /opt/pmhq
 
 #COPY /dist/pmhq-linux-x64 /opt/pmhq
 #COPY /dist/pmhq-linux-arm64 /opt/pmhq
