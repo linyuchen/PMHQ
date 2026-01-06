@@ -13,9 +13,9 @@ jobs:
       - name: Get latest release version from PMHQ.Rust
         id: get_version
         run: |
-          VERSION=$(curl -s https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/latest | jq -r '.tag_name')
+          VERSION=$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+            https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/latest | jq -r '.tag_name')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          # 去掉开头的v
           NPM_VERSION=${VERSION#v}
           echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
 
@@ -25,12 +25,23 @@ jobs:
           VERSION="${{ steps.get_version.outputs.version }}"
           echo "Downloading version: $VERSION"
           
-          curl -fL -o artifacts/pmhq-win-x64.zip \
-            "https://github.com/linyuchen/PMHQ.Rust/releases/download/$VERSION/pmhq-win-x64.zip"
-          curl -fL -o artifacts/pmhq-linux-x64.zip \
-            "https://github.com/linyuchen/PMHQ.Rust/releases/download/$VERSION/pmhq-linux-x64.zip"
-          curl -fL -o artifacts/pmhq-linux-arm64.zip \
-            "https://github.com/linyuchen/PMHQ.Rust/releases/download/$VERSION/pmhq-linux-arm64.zip"
+          curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+            -H "Accept: application/octet-stream" \
+            -o artifacts/pmhq-win-x64.zip \
+            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+              https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/latest | jq -r '.assets[] | select(.name=="pmhq-win-x64.zip") | .id')"
+          
+          curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+            -H "Accept: application/octet-stream" \
+            -o artifacts/pmhq-linux-x64.zip \
+            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+              https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/latest | jq -r '.assets[] | select(.name=="pmhq-linux-x64.zip") | .id')"
+          
+          curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+            -H "Accept: application/octet-stream" \
+            -o artifacts/pmhq-linux-arm64.zip \
+            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+              https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/latest | jq -r '.assets[] | select(.name=="pmhq-linux-arm64.zip") | .id')"
           
           ls -la artifacts/
 
