@@ -22,12 +22,17 @@ jobs:
       - name: Download artifacts from PMHQ.Rust
         run: |
           mkdir -p artifacts
-          curl -L -o artifacts/pmhq-win-x64.zip \
-            "https://github.com/linyuchen/PMHQ.Rust/releases/download/${{ steps.get_version.outputs.version }}/pmhq-win-x64.zip"
-          curl -L -o artifacts/pmhq-linux-x64.zip \
-            "https://github.com/linyuchen/PMHQ.Rust/releases/download/${{ steps.get_version.outputs.version }}/pmhq-linux-x64.zip"
-          curl -L -o artifacts/pmhq-linux-arm64.zip \
-            "https://github.com/linyuchen/PMHQ.Rust/releases/download/${{ steps.get_version.outputs.version }}/pmhq-linux-arm64.zip"
+          VERSION="${{ steps.get_version.outputs.version }}"
+          echo "Downloading version: $VERSION"
+          
+          curl -fL -o artifacts/pmhq-win-x64.zip \
+            "https://github.com/linyuchen/PMHQ.Rust/releases/download/$VERSION/pmhq-win-x64.zip"
+          curl -fL -o artifacts/pmhq-linux-x64.zip \
+            "https://github.com/linyuchen/PMHQ.Rust/releases/download/$VERSION/pmhq-linux-x64.zip"
+          curl -fL -o artifacts/pmhq-linux-arm64.zip \
+            "https://github.com/linyuchen/PMHQ.Rust/releases/download/$VERSION/pmhq-linux-arm64.zip"
+          
+          ls -la artifacts/
 
       - name: Create Release Draft
         uses: softprops/action-gh-release@v2
@@ -51,7 +56,7 @@ jobs:
       - name: Publish pmhq-dist-win-x64
         run: |
           mkdir -p package-win-x64
-          unzip artifacts/pmhq-win-x64.zip -d package-win-x64
+          unzip -j artifacts/pmhq-win-x64.zip -d package-win-x64
           echo '{"name": "pmhq-dist-win-x64", "version": "${{ steps.get_version.outputs.npm_version }}", "author": "linyuchen"}' > package-win-x64/package.json
           cd package-win-x64
           npm publish --provenance --access public
@@ -61,7 +66,7 @@ jobs:
       - name: Publish pmhq-dist-linux-x64
         run: |
           mkdir -p package-linux-x64
-          unzip artifacts/pmhq-linux-x64.zip -d package-linux-x64
+          unzip -j artifacts/pmhq-linux-x64.zip -d package-linux-x64
           echo '{"name": "pmhq-dist-linux-x64", "version": "${{ steps.get_version.outputs.npm_version }}", "author": "linyuchen"}' > package-linux-x64/package.json
           cd package-linux-x64
           npm publish --provenance --access public
@@ -71,7 +76,7 @@ jobs:
       - name: Publish pmhq-dist-linux-arm64
         run: |
           mkdir -p package-linux-arm64
-          unzip artifacts/pmhq-linux-arm64.zip -d package-linux-arm64
+          unzip -j artifacts/pmhq-linux-arm64.zip -d package-linux-arm64
           echo '{"name": "pmhq-dist-linux-arm64", "version": "${{ steps.get_version.outputs.npm_version }}", "author": "linyuchen"}' > package-linux-arm64/package.json
           cd package-linux-arm64
           npm publish --provenance --access public
