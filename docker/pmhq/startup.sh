@@ -3,11 +3,17 @@
 set -e
 echo "$(date): Startup script initiated."
 
-# Write environment variables to a file config
+# Write environment variables to config file (only if set)
 
 CONFIG_FILE="/opt/pmhq_config.json"
-sed -i "s/\"headless\":\s*false/\"headless\": ${ENABLE_HEADLESS}/g" "$CONFIG_FILE"
-sed -i "s/\"quick_login_qq\":\s*\"\"/\"quick_login_qq\": \"${AUTO_LOGIN_QQ}\"/g" "$CONFIG_FILE"
+if [ -n "$ENABLE_HEADLESS" ]; then
+    sed -i "s/\"headless\":\s*false/\"headless\": ${ENABLE_HEADLESS}/g" "$CONFIG_FILE"
+    echo "$(date): Set headless to ${ENABLE_HEADLESS}"
+fi
+if [ -n "$AUTO_LOGIN_QQ" ]; then
+    sed -i "s/\"quick_login_qq\":\s*\"\"/\"quick_login_qq\": \"${AUTO_LOGIN_QQ}\"/g" "$CONFIG_FILE"
+    echo "$(date): Set quick_login_qq to ${AUTO_LOGIN_QQ}"
+fi
 
 # Set DISPLAY globally for the script
 export DISPLAY=:99
