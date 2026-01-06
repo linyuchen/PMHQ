@@ -76,6 +76,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Publish pmhq-dist-win-x64
+        continue-on-error: true
         run: |
           npm install -g npm@latest
           mkdir -p package-win-x64
@@ -87,6 +88,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish pmhq-dist-linux-x64
+        continue-on-error: true
         run: |
           mkdir -p package-linux-x64
           unzip -j artifacts/pmhq-linux-x64.zip -d package-linux-x64
@@ -97,6 +99,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish pmhq-dist-linux-arm64
+        continue-on-error: true
         run: |
           mkdir -p package-linux-arm64
           unzip -j artifacts/pmhq-linux-arm64.zip -d package-linux-arm64
