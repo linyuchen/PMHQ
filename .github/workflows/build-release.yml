@@ -13,35 +13,46 @@ jobs:
       - name: Get latest release version from PMHQ.Rust
         id: get_version
         run: |
-          VERSION=$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
-            https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/latest | jq -r '.tag_name')
+          RELEASE_INFO=$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases?per_page=1")
+          VERSION=$(echo "$RELEASE_INFO" | jq -r '.[0].tag_name')
+          RELEASE_ID=$(echo "$RELEASE_INFO" | jq -r '.[0].id')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
           NPM_VERSION=${VERSION#v}
           echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
+          echo "Found version: $VERSION, release_id: $RELEASE_ID"
 
       - name: Download artifacts from PMHQ.Rust
         run: |
           mkdir -p artifacts
           VERSION="${{ steps.get_version.outputs.version }}"
-          echo "Downloading version: $VERSION"
+          RELEASE_ID="${{ steps.get_version.outputs.release_id }}"
+          echo "Downloading version: $VERSION (release_id: $RELEASE_ID)"
+          
+          ASSETS=$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/$RELEASE_ID/assets")
+          
+          WIN_X64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-win-x64.zip") | .id')
+          LINUX_X64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-linux-x64.zip") | .id')
+          LINUX_ARM64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-linux-arm64.zip") | .id')
+          
+          echo "Asset IDs: win-x64=$WIN_X64_ID, linux-x64=$LINUX_X64_ID, linux-arm64=$LINUX_ARM64_ID"
           
           curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
             -H "Accept: application/octet-stream" \
             -o artifacts/pmhq-win-x64.zip \
-            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
-              https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/latest | jq -r '.assets[] | select(.name=="pmhq-win-x64.zip") | .id')"
+            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$WIN_X64_ID"
           
           curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
             -H "Accept: application/octet-stream" \
             -o artifacts/pmhq-linux-x64.zip \
-            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
-              https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/latest | jq -r '.assets[] | select(.name=="pmhq-linux-x64.zip") | .id')"
+            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$LINUX_X64_ID"
           
           curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
             -H "Accept: application/octet-stream" \
             -o artifacts/pmhq-linux-arm64.zip \
-            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$(curl -s -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
-              https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/latest | jq -r '.assets[] | select(.name=="pmhq-linux-arm64.zip") | .id')"
+            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$LINUX_ARM64_ID"
           
           ls -la artifacts/
 
@@ -66,6 +77,7 @@ jobs:
 
       - name: Publish pmhq-dist-win-x64
         run: |
+          npm install -g npm@latest
           mkdir -p package-win-x64
           unzip -j artifacts/pmhq-win-x64.zip -d package-win-x64
           echo '{"name": "pmhq-dist-win-x64", "version": "${{ steps.get_version.outputs.npm_version }}", "author": "linyuchen"}' > package-win-x64/package.json
