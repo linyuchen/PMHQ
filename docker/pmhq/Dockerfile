@@ -3,6 +3,10 @@ FROM linyuchen/qq:latest
 ARG TARGETARCH
 ARG PMHQ_VERSION
 
+RUN apt-get update && apt-get install -y \
+    curl jq
+    && rm -rf /var/lib/apt/lists/*
+
 
 RUN if [ "$TARGETARCH" = "arm64" ]; then \
         arch="arm64"; \

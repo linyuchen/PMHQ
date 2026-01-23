@@ -75,6 +75,26 @@ dbus-run-session sh -c "exec env DISPLAY='$DISPLAY' LIBGL_ALWAYS_SOFTWARE='$LIBG
 PMHQ_LAUNCHER_PID=$!
 echo "$(date): pmhq (QQ) launched via dbus-run-session (PID $PMHQ_LAUNCHER_PID) with DISPLAY=$DISPLAY."
 
+# 等待 QQ 进程启动（PMHQ 注入完成后会退出，但 QQ 进程会保持运行）
+echo "$(date): Waiting for QQ process to start..."
+RETRY_COUNT=0
+MAX_RETRIES=30
+QQ_PID=""
+while [ -z "$QQ_PID" ]; do
+    RETRY_COUNT=$((RETRY_COUNT+1))
+    if [ $RETRY_COUNT -gt $MAX_RETRIES ]; then
+        echo "$(date): ERROR: QQ process not found after $MAX_RETRIES attempts. Exiting."
+        exit 1
+    fi
+    # 获取所有 QQ 进程 PID，排序后取最小的（主进程）
+    QQ_PID=$(pgrep -x "qq" 2>/dev/null | sort -n | head -n 1 || true)
+    if [ -z "$QQ_PID" ]; then
+        echo "$(date): QQ process not found yet (attempt $RETRY_COUNT/$MAX_RETRIES)... waiting 1s."
+        sleep 1
+    fi
+done
+echo "$(date): QQ main process found with PID $QQ_PID."
+
 echo "$(date): All services launched. Monitoring critical processes..."
 
 while true; do
@@ -82,8 +102,8 @@ while true; do
         echo "$(date): CRITICAL: Xvfb (PID $XFB_PID) has died. Exiting."
         exit 1
     fi
-    if ! kill -0 $PMHQ_LAUNCHER_PID 2>/dev/null; then
-        echo "$(date): CRITICAL: Application launcher (dbus-run-session for pmhq/QQ, PID $PMHQ_LAUNCHER_PID) has died. Likely application failure. Exiting."
+    if ! kill -0 $QQ_PID 2>/dev/null; then
+        echo "$(date): CRITICAL: QQ main process (PID $QQ_PID) has died. Exiting."
         exit 1
     fi
     sleep 5
