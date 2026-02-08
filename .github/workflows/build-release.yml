@@ -36,6 +36,7 @@ jobs:
           WIN_X64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-win-x64.zip") | .id')
           LINUX_X64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-linux-x64.zip") | .id')
           LINUX_ARM64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-linux-arm64.zip") | .id')
+          MACOS_ARM64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-darwin-arm64.zip") | .id')
           
           echo "Asset IDs: win-x64=$WIN_X64_ID, linux-x64=$LINUX_X64_ID, linux-arm64=$LINUX_ARM64_ID"
           
@@ -54,6 +55,11 @@ jobs:
             -o artifacts/pmhq-linux-arm64.zip \
             "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$LINUX_ARM64_ID"
           
+          curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
+            -H "Accept: application/octet-stream" \
+            -o artifacts/pmhq-macos-arm64.zip \
+            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$MACOS_ARM64_ID"
+          
           ls -la artifacts/
 
       - name: Create Release Draft
@@ -66,6 +72,7 @@ jobs:
             artifacts/pmhq-win-x64.zip
             artifacts/pmhq-linux-x64.zip
             artifacts/pmhq-linux-arm64.zip
+            artifacts/pmhq-macos-arm64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
 
