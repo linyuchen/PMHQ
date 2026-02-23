@@ -115,3 +115,14 @@ jobs:
           npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish pmhq-dist-macos-arm64
+        continue-on-error: true
+        run: |
+          mkdir -p package-macos-arm64
+          unzip -j artifacts/pmhq-macos-arm64.zip -d package-macos-arm64
+          echo '{"name": "pmhq-dist-macos-arm64", "version": "${{ steps.get_version.outputs.npm_version }}", "author": "linyuchen", "repository": {"type": "git", "url": "https://github.com/linyuchen/PMHQ"}}' > package-macos-arm64/package.json
+          cd package-macos-arm64
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
