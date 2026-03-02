@@ -4,7 +4,7 @@ Pure memory hook for QQNT
 
 ## JS plugin development
 
-See [plugin.md](./doc/plugin.md) for information about developing JavaScript plugins.
+- See [plugin.md](./doc/plugin.md) for information about developing JavaScript plugins.
 
 ## API integration
 
@@ -16,4 +16,4 @@ See [plugin.md](./doc/plugin.md) for information about developing JavaScript plu
 
 ## Configuration
 
-Configuration file reference: [config.md](./doc/config.md)
+- Configuration file reference: [config.md](./doc/config.md)
