@@ -28,7 +28,7 @@ RUN cat <<EOF > /opt/pmhq_config.json
     "enable_gui": false,
     "default_host": "0.0.0.0",
     "default_port": 13000,
-    "debug": true,
+    "debug": false,
     "qq_console": true,
     "headless": false
 }
