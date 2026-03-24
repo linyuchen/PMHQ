@@ -13,13 +13,6 @@
   "default_port": 13000,
   "qq_path": "D:\\Program Files\\QQNT9.9.19-34958\\QQ.exe",
   "qq_console": false,
-  "servers": [
-    {
-      "qq": 123456789,
-      "host": "localhost",
-      "port": 13000
-    }
-  ],
   "sub_cmd": ""
 }
 ```
@@ -33,8 +26,6 @@ quick_login_qq: 快速登录 QQ 号，如果已经登录过一次，下次启动
 qq_console: 是否显示 QQ 的控制台窗口
 
 qq_path:  QQ.exe 的绝对路径
-
-servers: 不同的 QQ 号监听不同的 ws 端口，如果 servers 不填写或者找不到对应的 QQ 号，pmhq 会使用 `default_host` 和 `default_port`
 
 sub_cmd: pmhq 运行后执行的子命令，可以用来启动子进程
 
