@@ -36,30 +36,24 @@ jobs:
           WIN_X64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-win-x64.zip") | .id')
           LINUX_X64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-linux-x64.zip") | .id')
           LINUX_ARM64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-linux-arm64.zip") | .id')
-          MACOS_ARM64_ID=$(echo "$ASSETS" | jq -r '.[] | select(.name=="pmhq-macos-arm64.zip") | .id')
-          
+
           echo "Asset IDs: win-x64=$WIN_X64_ID, linux-x64=$LINUX_X64_ID, linux-arm64=$LINUX_ARM64_ID"
-          
+
           curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
             -H "Accept: application/octet-stream" \
             -o artifacts/pmhq-win-x64.zip \
             "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$WIN_X64_ID"
-          
+
           curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
             -H "Accept: application/octet-stream" \
             -o artifacts/pmhq-linux-x64.zip \
             "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$LINUX_X64_ID"
-          
+
           curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
             -H "Accept: application/octet-stream" \
             -o artifacts/pmhq-linux-arm64.zip \
             "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$LINUX_ARM64_ID"
-          
-          curl -fL -H "Authorization: token ${{ secrets.ACTION_TOKEN }}" \
-            -H "Accept: application/octet-stream" \
-            -o artifacts/pmhq-macos-arm64.zip \
-            "https://api.github.com/repos/linyuchen/PMHQ.Rust/releases/assets/$MACOS_ARM64_ID"
-          
+
           ls -la artifacts/
 
       - name: Create Release Draft
@@ -72,7 +66,6 @@ jobs:
             artifacts/pmhq-win-x64.zip
             artifacts/pmhq-linux-x64.zip
             artifacts/pmhq-linux-arm64.zip
-            artifacts/pmhq-macos-arm64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
 
@@ -112,17 +105,6 @@ jobs:
           unzip -j artifacts/pmhq-linux-arm64.zip -d package-linux-arm64
           echo '{"name": "pmhq-dist-linux-arm64", "version": "${{ steps.get_version.outputs.npm_version }}", "author": "linyuchen", "repository": {"type": "git", "url": "https://github.com/linyuchen/PMHQ"}}' > package-linux-arm64/package.json
           cd package-linux-arm64
-          npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish pmhq-dist-macos-arm64
-        continue-on-error: true
-        run: |
-          mkdir -p package-macos-arm64
-          unzip -j artifacts/pmhq-macos-arm64.zip -d package-macos-arm64
-          echo '{"name": "pmhq-dist-macos-arm64", "version": "${{ steps.get_version.outputs.npm_version }}", "author": "linyuchen", "repository": {"type": "git", "url": "https://github.com/linyuchen/PMHQ"}}' > package-macos-arm64/package.json
-          cd package-macos-arm64
           npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
