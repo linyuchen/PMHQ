@@ -1,0 +1,32 @@
+FROM linyuchen/qq:latest
+
+# TARGETARCH is set automatically by buildx: "amd64" or "arm64".
+# Map amd64 -> x64 to match the dist/ directory layout.
+ARG TARGETARCH
+ARG PMHQ_ARCH=${TARGETARCH/amd64/x64}
+ARG PMHQ_VERSION
+
+COPY dist/linux-${PMHQ_ARCH}/pmhq-linux-${PMHQ_ARCH} /opt/pmhq
+COPY dist/linux-${PMHQ_ARCH}/libpmhq.so /opt/libpmhq.so
+
+RUN chmod +x /opt/pmhq
+RUN cat <<EOF > /opt/pmhq_config.json
+{
+    "debug": true,
+    "default_host": "0.0.0.0",
+    "default_port": 13000
+}
+EOF
+
+# 暴露端口
+EXPOSE 13000
+
+# Persist QQ user data, including saved login/session state.
+RUN mkdir -p /root/.config/QQ
+VOLUME ["/root/.config/QQ"]
+
+COPY docker/startup.sh /startup.sh
+RUN chmod +x /startup.sh
+
+# 启动服务
+ENTRYPOINT ["/startup.sh"]
