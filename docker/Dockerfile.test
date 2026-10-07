@@ -1,4 +1,4 @@
-FROM linyuchen/qq:latest
+FROM docker.io/linyuchen/qq:3.2.18-36497
 
 # TARGETARCH is set automatically by buildx: "amd64" or "arm64".
 # Map amd64 -> x64 to match the dist/ directory layout.

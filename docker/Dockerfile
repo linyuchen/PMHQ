@@ -1,4 +1,4 @@
-FROM linyuchen/qq:latest
+FROM docker.io/linyuchen/qq:3.2.18-36497
 
 ARG TARGETARCH
 ARG PMHQ_VERSION
